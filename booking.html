@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Court Booking - Padel Club</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="booking.css">
+</head>
+<body>
+  <header>
+    <h1>Padel Club Court Booking</h1>
+    <nav>
+      <a href="index.html" class="nav-link">Dashboard</a>
+      <a href="booking.html" class="nav-link active">Book Court</a>
+      <a href="index.html#xp" class="nav-link">XP & Rewards</a>
+      <a href="index.html#checkin" class="nav-link">Check-in</a>
+      <a href="index.html#shop" class="nav-link">Shop</a>
+      <a href="index.html#locker" class="nav-link">Locker</a>
+      <a href="admin.html" class="nav-link admin-only" id="adminLink" style="display: none;">Admin</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="booking">
+      <h2>Book a Court</h2>
+      
+      <div class="booking-form">
+        <div class="form-group">
+          <label for="bookingDate">Select Date:</label>
+          <input type="date" id="bookingDate" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="courtSelect">Select Court:</label>
+          <select id="courtSelect" required>
+            <option value="">Choose a court...</option>
+            <option value="1">Court 1</option>
+            <option value="2">Court 2</option>
+            <option value="3">Court 3</option>
+            <option value="4">Court 4</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="timeSelect">Select Time:</label>
+          <select id="timeSelect" required>
+            <option value="">Choose a time...</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="duration">Duration:</label>
+          <select id="duration" required>
+            <option value="60">1 hour</option>
+            <option value="90">1.5 hours</option>
+            <option value="120">2 hours</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="playerName">Player Name:</label>
+          <input type="text" id="playerName" placeholder="Enter your name" required>
+        </div>
+        
+        <button type="button" onclick="bookCourt()" class="book-button">Book Court</button>
+      </div>
+      
+      <div id="bookingStatus" class="status-message"></div>
+      
+      <div class="operating-hours">
+        <h3>Operating Hours</h3>
+        <ul>
+          <li><strong>Monday - Saturday:</strong> 7:00 AM - 11:00 PM</li>
+          <li><strong>Sunday:</strong> 8:00 AM - 11:00 PM</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="current-bookings">
+      <h2>Today's Bookings</h2>
+      <div class="bookings-grid" id="bookingsGrid">
+        <!-- Bookings will be populated by JavaScript -->
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Padel Club &copy; 2025</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="booking.js"></script>
+</body>
+</html>

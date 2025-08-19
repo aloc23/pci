@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard - Padel Club</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .admin-header {
+      background: #dc3545;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+    }
+    
+    .admin-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    
+    .admin-card {
+      background: #fff;
+      border: 1px solid #dee2e6;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    
+    .admin-card h3 {
+      margin-top: 0;
+      color: #dc3545;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+    
+    .stat-item {
+      background: #f8f9fa;
+      padding: 1rem;
+      border-radius: 6px;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #dc3545;
+    }
+    
+    .stat-label {
+      font-size: 0.9rem;
+      color: #6c757d;
+      margin-top: 0.5rem;
+    }
+    
+    .booking-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    
+    .booking-item {
+      padding: 0.75rem;
+      border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .booking-item:last-child {
+      border-bottom: none;
+    }
+    
+    .booking-info {
+      flex: 1;
+    }
+    
+    .booking-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+    
+    .btn-sm {
+      padding: 0.25rem 0.75rem;
+      font-size: 0.875rem;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-danger {
+      background: #dc3545;
+      color: white;
+    }
+    
+    .btn-danger:hover {
+      background: #c82333;
+    }
+    
+    .access-control {
+      background: #fff3cd;
+      border: 1px solid #ffeeba;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .unauthorized {
+      text-align: center;
+      padding: 2rem;
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+      border-radius: 8px;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Padel Club Admin Dashboard</h1>
+    <nav>
+      <a href="index.html" class="nav-link">Dashboard</a>
+      <a href="booking.html" class="nav-link">Book Court</a>
+      <a href="index.html#xp" class="nav-link">XP & Rewards</a>
+      <a href="index.html#checkin" class="nav-link">Check-in</a>
+      <a href="index.html#shop" class="nav-link">Shop</a>
+      <a href="index.html#locker" class="nav-link">Locker</a>
+      <a href="admin.html" class="nav-link active">Admin</a>
+    </nav>
+  </header>
+
+  <main>
+    <div id="unauthorizedAccess" class="unauthorized" style="display: none;">
+      <h2>Access Denied</h2>
+      <p>You don't have admin privileges to access this page.</p>
+      <button onclick="requestAdminAccess()" class="button">Request Admin Access (Demo)</button>
+      <p><small>Click the button above to simulate admin login for demonstration purposes.</small></p>
+    </div>
+
+    <div id="adminContent" style="display: none;">
+      <div class="admin-header">
+        <h2>Welcome, Admin!</h2>
+        <p>Manage bookings, view analytics, and oversee club operations</p>
+      </div>
+
+      <div class="access-control">
+        <strong>Admin Mode Active</strong> - 
+        <button onclick="toggleAdmin()" class="btn-sm btn-danger">Logout Admin</button>
+      </div>
+
+      <div class="admin-grid">
+        <div class="admin-card">
+          <h3>Club Statistics</h3>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-value" id="totalBookings">12</div>
+              <div class="stat-label">Today's Bookings</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="totalRevenue">$480</div>
+              <div class="stat-label">Today's Revenue</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="courtUtilization">75%</div>
+              <div class="stat-label">Court Utilization</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="memberCount">156</div>
+              <div class="stat-label">Active Members</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <h3>Recent Bookings</h3>
+          <div class="booking-list" id="adminBookingsList">
+            <!-- Bookings will be populated by JavaScript -->
+          </div>
+        </div>
+
+        <div class="admin-card">
+          <h3>Court Management</h3>
+          <div id="courtStatus">
+            <div class="stat-item">
+              <div class="stat-value">4/4</div>
+              <div class="stat-label">Courts Available</div>
+            </div>
+          </div>
+          <button onclick="maintenanceMode()" class="button" style="margin-top: 1rem;">Toggle Maintenance Mode</button>
+        </div>
+
+        <div class="admin-card">
+          <h3>Quick Actions</h3>
+          <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <button onclick="exportBookings()" class="button">Export Bookings</button>
+            <button onclick="sendNotifications()" class="button">Send Member Notifications</button>
+            <button onclick="generateReport()" class="button">Generate Daily Report</button>
+            <button onclick="manageMembers()" class="button">Manage Members</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <h3>Revenue Analytics</h3>
+        <canvas id="revenueChart" width="600" height="200"></canvas>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Padel Club Admin &copy; 2025</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script>
+    // Admin-specific JavaScript
+    window.addEventListener('load', function() {
+      checkAdminAccessForPage();
+      if (isAdmin) {
+        loadAdminData();
+        drawRevenueChart();
+      }
+    });
+
+    function checkAdminAccessForPage() {
+      const adminContent = document.getElementById('adminContent');
+      const unauthorizedAccess = document.getElementById('unauthorizedAccess');
+      
+      if (localStorage.getItem('isAdmin') === 'true') {
+        adminContent.style.display = 'block';
+        unauthorizedAccess.style.display = 'none';
+      } else {
+        adminContent.style.display = 'none';
+        unauthorizedAccess.style.display = 'block';
+      }
+    }
+
+    function requestAdminAccess() {
+      localStorage.setItem('isAdmin', 'true');
+      isAdmin = true;
+      checkAdminAccessForPage();
+      loadAdminData();
+      drawRevenueChart();
+    }
+
+    function loadAdminData() {
+      // Load bookings from localStorage
+      const savedBookings = localStorage.getItem('bookings');
+      const bookings = savedBookings ? JSON.parse(savedBookings) : [];
+      
+      // Update statistics
+      const today = new Date().toISOString().split('T')[0];
+      const todayBookings = bookings.filter(b => b.date === today);
+      
+      document.getElementById('totalBookings').textContent = todayBookings.length;
+      document.getElementById('totalRevenue').textContent = '$' + (todayBookings.length * 40);
+      
+      // Display recent bookings
+      displayAdminBookings(bookings);
+    }
+
+    function displayAdminBookings(bookings) {
+      const container = document.getElementById('adminBookingsList');
+      
+      if (bookings.length === 0) {
+        container.innerHTML = '<p>No bookings found.</p>';
+        return;
+      }
+      
+      // Sort by date and time (most recent first)
+      const sortedBookings = [...bookings].sort((a, b) => {
+        const dateCompare = new Date(b.date) - new Date(a.date);
+        if (dateCompare !== 0) return dateCompare;
+        return timeToMinutes(b.time) - timeToMinutes(a.time);
+      });
+      
+      container.innerHTML = sortedBookings.slice(0, 10).map((booking, index) => `
+        <div class="booking-item">
+          <div class="booking-info">
+            <strong>Court ${booking.court}</strong> - ${booking.player}<br>
+            <small>${formatDate(booking.date)} at ${formatTime(booking.time)}</small>
+          </div>
+          <div class="booking-actions">
+            <button onclick="cancelBooking(${index})" class="btn-sm btn-danger">Cancel</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function cancelBooking(index) {
+      if (confirm('Are you sure you want to cancel this booking?')) {
+        // This is a demo - in real app, you'd delete from database
+        alert('Booking cancelled (demo mode)');
+      }
+    }
+
+    function maintenanceMode() {
+      alert('Maintenance mode toggled (demo feature)');
+    }
+
+    function exportBookings() {
+      alert('Bookings exported to CSV (demo feature)');
+    }
+
+    function sendNotifications() {
+      alert('Notifications sent to all members (demo feature)');
+    }
+
+    function generateReport() {
+      alert('Daily report generated (demo feature)');
+    }
+
+    function manageMembers() {
+      alert('Member management opened (demo feature)');
+    }
+
+    function drawRevenueChart() {
+      const canvas = document.getElementById('revenueChart');
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      const revenue = [320, 450, 380, 520, 480, 410, 390]; // Sample data
+      
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#dc3545';
+      
+      revenue.forEach((val, idx) => {
+        const barHeight = (val / 600) * 150; // Scale to canvas
+        ctx.fillRect(70 * idx + 20, canvas.height - barHeight - 20, 50, barHeight);
+        
+        // Labels
+        ctx.fillStyle = '#222';
+        ctx.font = '12px Arial';
+        ctx.fillText(`$${val}`, 70 * idx + 25, canvas.height - barHeight - 25);
+        ctx.fillText(['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][idx], 70 * idx + 30, canvas.height - 5);
+        ctx.fillStyle = '#dc3545';
+      });
+    }
+
+    // Helper functions (duplicated for admin page)
+    function formatTime(time24) {
+      const [hour, minute] = time24.split(':').map(Number);
+      const period = hour >= 12 ? 'PM' : 'AM';
+      const hour12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+      return `${hour12}:${minute.toString().padStart(2, '0')} ${period}`;
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { 
+        weekday: 'short', 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric' 
+      });
+    }
+
+    function timeToMinutes(time) {
+      const [hours, minutes] = time.split(':').map(Number);
+      return hours * 60 + minutes;
+    }
+  </script>
+</body>
+</html>
