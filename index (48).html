@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Padel Club Smart Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Padel Club Smart Dashboard</h1>
+    <nav>
+      <a href="#dashboard">Court Dashboard</a>
+      <a href="#xp">XP & Rewards</a>
+      <a href="#checkin">Member Check-in</a>
+      <a href="#shop">In-App Shop</a>
+      <a href="#locker">Locker Access</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="dashboard">
+      <h2>Court Utilization</h2>
+      <div class="dashboard-card">
+        <div>
+          <strong>Current Usage:</strong>
+          <span id="courtUsage">68%</span>
+        </div>
+        <div>
+          <strong>Revenue Forecast:</strong>
+          <span id="revenueForecast">$1,250</span>
+        </div>
+        <canvas id="usageChart" width="400" height="150"></canvas>
+      </div>
+    </section>
+
+    <section id="xp">
+      <h2>Member XP & Rewards</h2>
+      <div class="xp-card">
+        <div>
+          <strong>Your XP:</strong> <span id="xpPoints">420</span>
+        </div>
+        <div>
+          <strong>Unlocked:</strong>
+          <ul id="rewardsList">
+            <li>10% off next booking</li>
+            <li>Free sports drink</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="checkin">
+      <h2>Member Check-In</h2>
+      <div class="checkin-card">
+        <label for="qrInput">Scan QR / Tap NFC:</label>
+        <input type="text" id="qrInput" placeholder="Enter code or tap to simulate">
+        <button onclick="simulateCheckin()">Check In</button>
+        <div id="checkinStatus"></div>
+      </div>
+    </section>
+
+    <section id="shop">
+      <h2>In-App Purchases</h2>
+      <div class="shop-card">
+        <form id="shopForm">
+          <label>
+            <input type="checkbox" name="balls"> Balls ($5)
+          </label>
+          <label>
+            <input type="checkbox" name="drink"> Sports Drink ($3)
+          </label>
+          <label>
+            <input type="checkbox" name="snack"> Snack Bar ($2)
+          </label>
+          <button type="submit">Order to Court</button>
+        </form>
+        <div id="shopStatus"></div>
+      </div>
+    </section>
+
+    <section id="locker">
+      <h2>Locker Assignment</h2>
+      <div class="locker-card">
+        <button onclick="assignLocker()">Assign Locker</button>
+        <div id="lockerStatus"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Padel Club &copy; 2025</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
