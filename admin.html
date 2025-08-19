@@ -124,16 +124,21 @@
 </head>
 <body>
   <header>
-    <h1>Padel Club Admin Dashboard</h1>
-    <nav>
-      <a href="index.html" class="nav-link">Dashboard</a>
-      <a href="booking.html" class="nav-link">Book Court</a>
-      <a href="index.html#xp" class="nav-link">XP & Rewards</a>
-      <a href="index.html#checkin" class="nav-link">Check-in</a>
-      <a href="index.html#shop" class="nav-link">Shop</a>
-      <a href="index.html#locker" class="nav-link">Locker</a>
-      <a href="admin.html" class="nav-link active">Admin</a>
-    </nav>
+    <div class="header-content">
+      <div class="logo-section">
+        <img src="logo.svg" alt="Padel Club Logo">
+        <h1>Padel Club Admin Dashboard</h1>
+      </div>
+      <nav>
+        <a href="index.html" class="nav-link">Dashboard</a>
+        <a href="booking.html" class="nav-link">Book Court</a>
+        <a href="index.html#xp" class="nav-link">XP & Rewards</a>
+        <a href="index.html#checkin" class="nav-link">Check-in</a>
+        <a href="index.html#shop" class="nav-link">Shop</a>
+        <a href="index.html#locker" class="nav-link">Locker</a>
+        <a href="admin.html" class="nav-link active">Admin</a>
+      </nav>
+    </div>
   </header>
 
   <main>
@@ -164,7 +169,7 @@
               <div class="stat-label">Today's Bookings</div>
             </div>
             <div class="stat-item">
-              <div class="stat-value" id="totalRevenue">$480</div>
+              <div class="stat-value" id="totalRevenue">€420</div>
               <div class="stat-label">Today's Revenue</div>
             </div>
             <div class="stat-item">
@@ -260,7 +265,7 @@
       const todayBookings = bookings.filter(b => b.date === today);
       
       document.getElementById('totalBookings').textContent = todayBookings.length;
-      document.getElementById('totalRevenue').textContent = '$' + (todayBookings.length * 40);
+      document.getElementById('totalRevenue').textContent = '€' + (todayBookings.length * 35);
       
       // Display recent bookings
       displayAdminBookings(bookings);
@@ -338,7 +343,7 @@
         // Labels
         ctx.fillStyle = '#222';
         ctx.font = '12px Arial';
-        ctx.fillText(`$${val}`, 70 * idx + 25, canvas.height - barHeight - 25);
+        ctx.fillText(`€${val}`, 70 * idx + 25, canvas.height - barHeight - 25);
         ctx.fillText(['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][idx], 70 * idx + 30, canvas.height - 5);
         ctx.fillStyle = '#dc3545';
       });

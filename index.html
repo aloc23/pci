@@ -8,16 +8,21 @@
 </head>
 <body>
   <header>
-    <h1>Padel Club Smart Dashboard</h1>
-    <nav>
-      <a href="index.html" class="nav-link active">Dashboard</a>
-      <a href="booking.html" class="nav-link">Book Court</a>
-      <a href="#xp" class="nav-link">XP & Rewards</a>
-      <a href="#checkin" class="nav-link">Check-in</a>
-      <a href="#shop" class="nav-link">Shop</a>
-      <a href="#locker" class="nav-link">Locker</a>
-      <a href="admin.html" class="nav-link admin-only" id="adminLink" style="display: none;">Admin</a>
-    </nav>
+    <div class="header-content">
+      <div class="logo-section">
+        <img src="logo.svg" alt="Padel Club Logo">
+        <h1>Padel Club Smart Dashboard</h1>
+      </div>
+      <nav>
+        <a href="index.html" class="nav-link active">Dashboard</a>
+        <a href="booking.html" class="nav-link">Book Court</a>
+        <a href="#xp" class="nav-link">XP & Rewards</a>
+        <a href="#checkin" class="nav-link">Check-in</a>
+        <a href="#shop" class="nav-link">Shop</a>
+        <a href="#locker" class="nav-link">Locker</a>
+        <a href="admin.html" class="nav-link admin-only" id="adminLink" style="display: none;">Admin</a>
+      </nav>
+    </div>
   </header>
 
   <main>
@@ -30,7 +35,7 @@
         </div>
         <div>
           <strong>Revenue Forecast:</strong>
-          <span id="revenueForecast">$1,250</span>
+          <span id="revenueForecast">€1,125</span>
         </div>
         <div style="margin-top: 1rem;">
           <a href="booking.html" class="button">Book a Court</a>
@@ -70,13 +75,13 @@
       <div class="shop-card">
         <form id="shopForm">
           <label>
-            <input type="checkbox" name="balls"> Balls ($5)
+            <input type="checkbox" name="balls"> Balls (€4)
           </label>
           <label>
-            <input type="checkbox" name="drink"> Sports Drink ($3)
+            <input type="checkbox" name="drink"> Sports Drink (€3)
           </label>
           <label>
-            <input type="checkbox" name="snack"> Snack Bar ($2)
+            <input type="checkbox" name="snack"> Snack Bar (€2)
           </label>
           <button type="submit">Order to Court</button>
         </form>

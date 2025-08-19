@@ -11,6 +11,13 @@ const OPERATING_HOURS = {
   sunday: { start: 8, end: 23 }   // 8 AM to 11 PM Sunday
 };
 
+// Pricing configuration (in EUR)
+const PRICING = {
+  60: 35,   // 1 hour
+  90: 50,   // 1.5 hours
+  120: 65   // 2 hours
+};
+
 // Initialize booking page
 document.addEventListener('DOMContentLoaded', function() {
   initializeBookingPage();
@@ -158,7 +165,8 @@ function bookCourt() {
     date: date,
     time: time,
     duration: duration,
-    player: playerName
+    player: playerName,
+    price: PRICING[duration]
   };
   
   bookings.push(newBooking);
@@ -166,7 +174,8 @@ function bookCourt() {
   // Save to localStorage for persistence
   localStorage.setItem('bookings', JSON.stringify(bookings));
   
-  showStatus(`Court ${court} booked successfully for ${formatTime(time)} on ${formatDate(date)}!`, 'success');
+  const price = PRICING[duration];
+  showStatus(`Court ${court} booked successfully for ${formatTime(time)} on ${formatDate(date)}! Total: €${price}`, 'success');
   
   // Reset form
   document.getElementById('courtSelect').value = '';
@@ -193,10 +202,19 @@ function showStatus(message, type) {
   statusElement.textContent = message;
   statusElement.className = `status-message ${type}`;
   
-  // Auto-hide success messages after 5 seconds
+  // Add toast animation
+  if (type === 'success') {
+    statusElement.classList.add('toast-success');
+  }
+  
+  // Auto-hide success messages after 5 seconds with fade out
   if (type === 'success') {
     setTimeout(() => {
-      statusElement.style.display = 'none';
+      statusElement.classList.add('toast-fadeout');
+      setTimeout(() => {
+        statusElement.style.display = 'none';
+        statusElement.classList.remove('toast-success', 'toast-fadeout');
+      }, 300);
     }, 5000);
   }
 }
@@ -221,6 +239,7 @@ function displayBookings() {
       <div class="time">${formatTime(booking.time)} - ${formatTime(addMinutesToTime(booking.time, booking.duration))}</div>
       <div class="player">Player: ${booking.player}</div>
       <div class="duration">Duration: ${booking.duration} minutes</div>
+      <div class="price">Price: €${booking.price || PRICING[booking.duration] || 35}</div>
     </div>
   `).join('');
 }
