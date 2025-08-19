@@ -3,6 +3,7 @@ body {
   background: #f3f7fa;
   margin: 0;
   color: #222;
+  padding-bottom: 80px; /* Account for fixed footer */
 }
 header {
   background: #003366;
@@ -10,14 +11,30 @@ header {
   padding: 1rem;
   text-align: center;
 }
+nav {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
 nav a {
   color: #fff;
-  margin: 0 1rem;
+  margin: 0 0.5rem;
   text-decoration: none;
   font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+nav a:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+nav a.active {
+  background: rgba(255, 255, 255, 0.2);
 }
 main {
-  max-width: 700px;
+  max-width: 1000px;
   margin: 2rem auto;
   padding: 1rem;
   background: #fff;
@@ -33,7 +50,7 @@ section {
   border-radius: 8px;
   margin-top: 1rem;
 }
-button {
+button, .button {
   background: #0074d9;
   color: #fff;
   border: none;
@@ -42,8 +59,11 @@ button {
   font-size: 1rem;
   cursor: pointer;
   margin-top: 0.7rem;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s;
 }
-button:hover {
+button:hover, .button:hover {
   background: #005fa3;
 }
 footer {
@@ -66,4 +86,69 @@ input[type="text"] {
 label {
   display: block;
   margin: 0.5rem 0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  header {
+    padding: 0.5rem;
+  }
+  
+  header h1 {
+    font-size: 1.5rem;
+    margin: 0 0 1rem 0;
+  }
+  
+  nav {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  nav a {
+    margin: 0.25rem 0;
+    width: 90%;
+    text-align: center;
+  }
+  
+  main {
+    margin: 1rem;
+    padding: 1rem;
+    max-width: none;
+  }
+  
+  .dashboard-card, .xp-card, .checkin-card, .shop-card, .locker-card {
+    padding: 1rem;
+  }
+  
+  canvas {
+    width: 100% !important;
+    height: auto !important;
+  }
+}
+
+@media (max-width: 480px) {
+  header h1 {
+    font-size: 1.2rem;
+  }
+  
+  nav a {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.8rem;
+  }
+  
+  main {
+    margin: 0.5rem;
+    padding: 0.5rem;
+  }
+  
+  button, .button {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+/* Admin-specific styles */
+.admin-only {
+  border-left: 3px solid #dc3545;
+  padding-left: 0.5rem;
 }
