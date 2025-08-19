@@ -9,16 +9,21 @@
 </head>
 <body>
   <header>
-    <h1>Padel Club Court Booking</h1>
-    <nav>
-      <a href="index.html" class="nav-link">Dashboard</a>
-      <a href="booking.html" class="nav-link active">Book Court</a>
-      <a href="index.html#xp" class="nav-link">XP & Rewards</a>
-      <a href="index.html#checkin" class="nav-link">Check-in</a>
-      <a href="index.html#shop" class="nav-link">Shop</a>
-      <a href="index.html#locker" class="nav-link">Locker</a>
-      <a href="admin.html" class="nav-link admin-only" id="adminLink" style="display: none;">Admin</a>
-    </nav>
+    <div class="header-content">
+      <div class="logo-section">
+        <img src="logo.svg" alt="Padel Club Logo">
+        <h1>Padel Club Court Booking</h1>
+      </div>
+      <nav>
+        <a href="index.html" class="nav-link">Dashboard</a>
+        <a href="booking.html" class="nav-link active">Book Court</a>
+        <a href="index.html#xp" class="nav-link">XP & Rewards</a>
+        <a href="index.html#checkin" class="nav-link">Check-in</a>
+        <a href="index.html#shop" class="nav-link">Shop</a>
+        <a href="index.html#locker" class="nav-link">Locker</a>
+        <a href="admin.html" class="nav-link admin-only" id="adminLink" style="display: none;">Admin</a>
+      </nav>
+    </div>
   </header>
 
   <main>
@@ -52,9 +57,9 @@
         <div class="form-group">
           <label for="duration">Duration:</label>
           <select id="duration" required>
-            <option value="60">1 hour</option>
-            <option value="90">1.5 hours</option>
-            <option value="120">2 hours</option>
+            <option value="60">1 hour - €35</option>
+            <option value="90">1.5 hours - €50</option>
+            <option value="120">2 hours - €65</option>
           </select>
         </div>
         
