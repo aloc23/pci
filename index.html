@@ -75,63 +75,156 @@
   </header>
 
   <main>
-    <section id="dashboard">
-      <h2>Court Utilization</h2>
-      <div class="dashboard-card">
-        <div>
-          <strong>Current Usage:</strong>
-          <span id="courtUsage">68%</span>
+    <!-- Welcome Section with Stats -->
+    <section id="welcome" class="dashboard-section">
+      <h2>Welcome to Your Dashboard</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <span class="stat-value" id="courtUsage">68%</span>
+          <p class="stat-label">Court Usage</p>
         </div>
-        <div>
-          <strong>Revenue Forecast:</strong>
-          <span id="revenueForecast">€1,125</span>
+        <div class="stat-card">
+          <span class="stat-value" id="xpPoints">420</span>
+          <p class="stat-label">Your XP</p>
         </div>
-        <div style="margin-top: 1rem;">
-          <a href="booking.html" class="button">
-            <svg class="action-icon" viewBox="0 0 24 24">
-              <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
-            </svg>
-            Book a Court
-          </a>
+        <div class="stat-card">
+          <span class="stat-value" id="revenueForecast">€1,125</span>
+          <p class="stat-label">This Month</p>
         </div>
-        <canvas id="usageChart" width="400" height="150"></canvas>
+        <div class="stat-card">
+          <span class="stat-value" id="todayBookings">3</span>
+          <p class="stat-label">Today's Bookings</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Actions Grid -->
+    <section id="quick-actions" class="dashboard-section">
+      <h2>Quick Actions</h2>
+      <div class="action-grid">
+        <div class="action-card">
+          <svg class="action-icon" viewBox="0 0 24 24" style="margin: 0 auto var(--space-md) auto; display: block;">
+            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+          </svg>
+          <h3>Book a Court</h3>
+          <p>Reserve your preferred court time with real-time availability</p>
+          <a href="booking.html" class="button">Book Now</a>
+        </div>
+
+        <div class="action-card">
+          <svg class="action-icon" viewBox="0 0 24 24" style="margin: 0 auto var(--space-md) auto; display: block;">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          <h3>Quick Check-in</h3>
+          <p>Scan QR code or tap NFC for instant court access</p>
+          <button onclick="simulateQRScan()" class="button">Check In</button>
+        </div>
+
+        <div class="action-card">
+          <svg class="action-icon" viewBox="0 0 24 24" style="margin: 0 auto var(--space-md) auto; display: block;">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+          <h3>XP & Rewards</h3>
+          <p>Track your points and redeem exclusive member rewards</p>
+          <button onclick="scrollToSection('xp')" class="button">View Rewards</button>
+        </div>
+
+        <div class="action-card">
+          <svg class="action-icon" viewBox="0 0 24 24" style="margin: 0 auto var(--space-md) auto; display: block;">
+            <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+          </svg>
+          <h3>Club Shop</h3>
+          <p>Order equipment, drinks, and snacks for pickup</p>
+          <button onclick="scrollToSection('shop')" class="button">Browse Shop</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Court Analytics Dashboard -->
+    <section id="analytics" class="dashboard-section">
+      <h2>Court Analytics</h2>
+      <div class="dashboard-grid">
+        <div class="dashboard-card">
+          <h3>Usage Chart</h3>
+          <canvas id="usageChart" width="400" height="200"></canvas>
+        </div>
         
-        <!-- Peak Hours Heatmap -->
-        <div class="heatmap-section" style="margin-top: 2rem;">
-          <h4>Peak Hours Heatmap</h4>
-          <div class="heatmap-grid" id="heatmapGrid">
-            <!-- Heatmap will be populated by JavaScript -->
-          </div>
-          <div class="heatmap-legend">
-            <span class="legend-item low">Low</span>
-            <span class="legend-item medium">Medium</span>
-            <span class="legend-item high">High</span>
-            <span class="legend-item peak">Peak</span>
+        <div class="dashboard-card">
+          <div class="heatmap-section">
+            <h4>Peak Hours Heatmap</h4>
+            <div class="heatmap-grid" id="heatmapGrid">
+              <!-- Heatmap will be populated by JavaScript -->
+            </div>
+            <div class="heatmap-legend">
+              <span class="legend-item low">Low</span>
+              <span class="legend-item medium">Medium</span>
+              <span class="legend-item high">High</span>
+              <span class="legend-item peak">Peak</span>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="xp">
+    <!-- XP & Rewards Section -->
+    <section id="xp" class="dashboard-section">
       <h2>Member XP & Rewards</h2>
-      <div class="xp-card">
-        <div>
-          <strong>Your XP:</strong> <span id="xpPoints">420</span>
+      <div class="dashboard-grid">
+        <div class="xp-card">
+          <h3>Your Progress</h3>
+          <div class="xp-display">
+            <div class="xp-circle">
+              <span class="xp-value" id="xpPointsDetailed">420</span>
+              <span class="xp-label">XP</span>
+            </div>
+            <div class="xp-level">
+              <p>Level 5 Member</p>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: 70%"></div>
+              </div>
+              <p class="next-level">80 XP to Level 6</p>
+            </div>
+          </div>
         </div>
-        <div>
-          <strong>Unlocked:</strong>
-          <ul id="rewardsList">
-            <li>10% off next booking</li>
-            <li>Free sports drink</li>
-          </ul>
+
+        <div class="xp-card">
+          <h3>Active Rewards</h3>
+          <div class="rewards-list">
+            <div class="reward-item active">
+              <div class="reward-icon">🎾</div>
+              <div class="reward-info">
+                <h4>10% Off Next Booking</h4>
+                <p>Valid until: Dec 31, 2024</p>
+              </div>
+              <button class="reward-claim">Use Now</button>
+            </div>
+            <div class="reward-item active">
+              <div class="reward-icon">🥤</div>
+              <div class="reward-info">
+                <h4>Free Sports Drink</h4>
+                <p>Valid until: Dec 25, 2024</p>
+              </div>
+              <button class="reward-claim">Claim</button>
+            </div>
+            <div class="reward-item locked">
+              <div class="reward-icon">🏆</div>
+              <div class="reward-info">
+                <h4>VIP Court Access</h4>
+                <p>Unlock at Level 6</p>
+              </div>
+              <button class="reward-claim disabled">Locked</button>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <section id="checkin">
+    <!-- Check-in Section -->
+    <section id="checkin" class="dashboard-section">
       <h2>Member Check-In</h2>
-      <div class="checkin-card">
-        <div class="qr-nfc-section">
+      <div class="dashboard-grid dashboard-grid-wide">
+        <div class="checkin-card">
+          <h3>Access Methods</h3>
           <div class="scan-methods">
             <button class="scan-button" onclick="simulateQRScan()">
               <svg class="action-icon" viewBox="0 0 24 24">
@@ -152,42 +245,72 @@
           <div class="manual-entry">
             <label for="qrInput">Enter Code Manually:</label>
             <input type="text" id="qrInput" placeholder="Enter access code">
-            <button onclick="simulateCheckin()">Check In</button>
+            <button onclick="simulateCheckin()" class="button">Check In</button>
           </div>
+          <div id="checkinStatus" class="status-display"></div>
         </div>
-        <div id="checkinStatus"></div>
-        <div class="access-log" id="accessLog" style="margin-top: 1rem;">
-          <h4>Recent Access Log</h4>
-          <div id="logEntries"></div>
+
+        <div class="checkin-card">
+          <div class="access-log" id="accessLog">
+            <h4>Recent Access Log</h4>
+            <div id="logEntries" class="log-entries">
+              <!-- Log entries will be populated by JavaScript -->
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <section id="shop">
+    <!-- Shop Section -->
+    <section id="shop" class="dashboard-section">
       <h2>In-App Purchases</h2>
       <div class="shop-card">
-        <form id="shopForm">
-          <label>
-            <input type="checkbox" name="balls" data-price="4"> Balls (€4)
-          </label>
-          <label>
-            <input type="checkbox" name="drink" data-price="3"> Sports Drink (€3)
-          </label>
-          <label>
-            <input type="checkbox" name="snack" data-price="2"> Snack Bar (€2)
-          </label>
+        <h3>Quick Order</h3>
+        <form id="shopForm" class="shop-form">
+          <div class="product-grid">
+            <label class="product-item">
+              <input type="checkbox" name="balls" data-price="4">
+              <div class="product-card">
+                <div class="product-icon">🎾</div>
+                <div class="product-info">
+                  <h4>Padel Balls</h4>
+                  <p class="product-price">€4.00</p>
+                </div>
+              </div>
+            </label>
+            <label class="product-item">
+              <input type="checkbox" name="drink" data-price="3">
+              <div class="product-card">
+                <div class="product-icon">🥤</div>
+                <div class="product-info">
+                  <h4>Sports Drink</h4>
+                  <p class="product-price">€3.00</p>
+                </div>
+              </div>
+            </label>
+            <label class="product-item">
+              <input type="checkbox" name="snack" data-price="2">
+              <div class="product-card">
+                <div class="product-icon">🍫</div>
+                <div class="product-info">
+                  <h4>Energy Bar</h4>
+                  <p class="product-price">€2.00</p>
+                </div>
+              </div>
+            </label>
+          </div>
           
-          <div class="order-summary" id="orderSummary" style="margin-top: 1rem; display: none;">
+          <div class="order-summary" id="orderSummary" style="display: none;">
             <h4>Order Summary</h4>
-            <div id="summaryItems"></div>
+            <div id="summaryItems" class="summary-items"></div>
             <div class="total-price">
               <strong>Total: €<span id="totalPrice">0</span></strong>
             </div>
           </div>
           
-          <div class="payment-methods" style="margin-top: 1rem;">
+          <div class="payment-methods">
             <h4>Payment Method</h4>
-            <div class="payment-options">
+            <div class="payment-grid">
               <button type="button" class="payment-btn apple-pay" onclick="processApplePay()">
                 <svg class="action-icon" viewBox="0 0 24 24">
                   <path d="M15.5 2.25c.9 0 1.73.36 2.33.96.6.6.96 1.43.96 2.33 0 .9-.36 1.73-.96 2.33-.6.6-1.43.96-2.33.96-.9 0-1.73-.36-2.33-.96-.6-.6-.96-1.43-.96-2.33 0-.9.36-1.73.96-2.33.6-.6 1.43-.96 2.33-.96z"/>
@@ -197,9 +320,6 @@
               <button type="button" class="payment-btn google-pay" onclick="processGooglePay()">
                 <svg class="action-icon" viewBox="0 0 24 24">
                   <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                 </svg>
                 Google Pay
               </button>
@@ -207,20 +327,36 @@
                 <svg class="action-icon" viewBox="0 0 24 24">
                   <path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/>
                 </svg>
-                Standard Payment
+                Card Payment
               </button>
             </div>
           </div>
         </form>
-        <div id="shopStatus"></div>
+        <div id="shopStatus" class="status-display"></div>
       </div>
     </section>
 
-    <section id="locker">
+    <!-- Locker Section -->
+    <section id="locker" class="dashboard-section">
       <h2>Locker Assignment</h2>
       <div class="locker-card">
-        <button onclick="assignLocker()">Assign Locker</button>
-        <div id="lockerStatus"></div>
+        <h3>Your Locker</h3>
+        <div class="locker-grid">
+          <div class="locker-status" id="currentLocker">
+            <div class="locker-number">
+              <span id="lockerNumber">Not Assigned</span>
+            </div>
+            <div class="locker-info">
+              <p id="lockerLocation">No active locker</p>
+              <p id="lockerExpiry">Assign a locker to get started</p>
+            </div>
+          </div>
+          <div class="locker-actions">
+            <button onclick="assignLocker()" class="button">Assign Locker</button>
+            <button onclick="releaseLocker()" class="button btn-secondary" id="releaseBtn" style="display: none;">Release Locker</button>
+          </div>
+        </div>
+        <div id="lockerStatus" class="status-display"></div>
       </div>
     </section>
   </main>
@@ -230,5 +366,96 @@
   </footer>
 
   <script src="script.js"></script>
+  <script>
+    // Enhanced dashboard functionality
+    function scrollToSection(sectionId) {
+      const element = document.getElementById(sectionId);
+      if (element) {
+        element.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }
+    }
+
+    // Enhanced locker management
+    function releaseLocker() {
+      const lockerNumber = document.getElementById('lockerNumber');
+      const lockerLocation = document.getElementById('lockerLocation');
+      const lockerExpiry = document.getElementById('lockerExpiry');
+      const releaseBtn = document.getElementById('releaseBtn');
+      const status = document.getElementById('lockerStatus');
+      
+      lockerNumber.textContent = 'Not Assigned';
+      lockerLocation.textContent = 'No active locker';
+      lockerExpiry.textContent = 'Assign a locker to get started';
+      releaseBtn.style.display = 'none';
+      
+      status.textContent = 'Locker released successfully!';
+      status.className = 'status-display show';
+      status.style.background = 'rgba(239, 68, 68, 0.1)';
+      status.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+      status.style.color = '#dc2626';
+      
+      setTimeout(() => {
+        status.classList.remove('show');
+      }, 3000);
+    }
+
+    // Enhanced assign locker function
+    function assignLocker() {
+      const lockerNumbers = [12, 15, 23, 34, 45, 67, 78, 89];
+      const locations = ['Zone A', 'Zone B', 'Zone C'];
+      
+      const randomLocker = lockerNumbers[Math.floor(Math.random() * lockerNumbers.length)];
+      const randomLocation = locations[Math.floor(Math.random() * locations.length)];
+      
+      const lockerNumber = document.getElementById('lockerNumber');
+      const lockerLocation = document.getElementById('lockerLocation');
+      const lockerExpiry = document.getElementById('lockerExpiry');
+      const releaseBtn = document.getElementById('releaseBtn');
+      const status = document.getElementById('lockerStatus');
+      
+      lockerNumber.textContent = `#${randomLocker}`;
+      lockerLocation.textContent = `${randomLocation} - Ground Floor`;
+      lockerExpiry.textContent = 'Expires at 11:59 PM today';
+      releaseBtn.style.display = 'inline-flex';
+      
+      status.textContent = `Locker #${randomLocker} assigned successfully!`;
+      status.className = 'status-display show';
+      status.style.background = 'rgba(0, 255, 136, 0.1)';
+      status.style.borderColor = 'rgba(0, 255, 136, 0.3)';
+      status.style.color = 'var(--primary-green)';
+      
+      setTimeout(() => {
+        status.classList.remove('show');
+      }, 3000);
+    }
+
+    // Initialize access log
+    function loadAccessLog() {
+      const logEntries = document.getElementById('logEntries');
+      const sampleEntries = [
+        { time: '2024-01-15 14:30', action: 'Court A access granted' },
+        { time: '2024-01-15 12:15', action: 'Locker #23 opened' },
+        { time: '2024-01-14 16:45', action: 'Shop purchase completed' },
+        { time: '2024-01-14 09:20', action: 'Check-in successful' }
+      ];
+      
+      if (logEntries) {
+        logEntries.innerHTML = sampleEntries.map(entry => `
+          <div class="log-entry">
+            <p class="log-time">${entry.time}</p>
+            <p class="log-action">${entry.action}</p>
+          </div>
+        `).join('');
+      }
+    }
+
+    // Initialize dashboard on load
+    document.addEventListener('DOMContentLoaded', function() {
+      loadAccessLog();
+    });
+  </script>
 </body>
 </html>
