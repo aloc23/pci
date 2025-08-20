@@ -33,146 +33,167 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="booking.css">
   <style>
-    /* Login-specific styles */
-    .login-container {
+    /* Landing Page Hero Section Styles */
+    .hero-container {
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, var(--matt-black) 0%, var(--matt-black-light) 100%);
+      background: 
+        radial-gradient(ellipse at top, rgba(0, 255, 136, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at bottom right, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+        linear-gradient(135deg, var(--matt-black) 0%, var(--matt-black-light) 50%, var(--surface-dark) 100%);
       position: relative;
       overflow: hidden;
+      padding: var(--space-xl) var(--space-lg);
     }
 
-    .login-container::before {
+    .hero-container::before {
       content: '';
       position: absolute;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: radial-gradient(ellipse at center, rgba(0, 255, 136, 0.1) 0%, transparent 70%);
+      background: 
+        repeating-linear-gradient(
+          90deg,
+          transparent,
+          transparent 100px,
+          rgba(0, 255, 136, 0.03) 100px,
+          rgba(0, 255, 136, 0.03) 101px
+        );
       z-index: 1;
     }
 
-    .login-card {
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: var(--border-radius);
-      padding: 3rem;
-      box-shadow: var(--shadow-lg), 0 0 30px rgba(0, 255, 136, 0.2);
-      max-width: 500px;
-      width: 90%;
+    .hero-card {
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      border-radius: var(--border-radius-xl);
+      padding: var(--space-3xl);
+      box-shadow: 
+        var(--shadow-xl), 
+        0 0 60px rgba(0, 255, 136, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      max-width: 580px;
+      width: 100%;
       text-align: center;
       position: relative;
       z-index: 2;
-      backdrop-filter: blur(10px);
       border: 1px solid rgba(0, 255, 136, 0.2);
+      animation: fadeInScale 0.8s ease-out;
     }
 
-    .login-header {
-      margin-bottom: 2rem;
+    .hero-header {
+      margin-bottom: var(--space-2xl);
     }
 
-    .login-header h1 {
+    .hero-title {
       color: var(--matt-black);
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 0.5rem;
-      background: linear-gradient(135deg, var(--matt-black), var(--granite-grey-dark));
+      font-size: var(--font-size-5xl);
+      font-weight: 800;
+      margin-bottom: var(--space-lg);
+      background: linear-gradient(135deg, var(--matt-black), var(--granite-grey-dark), var(--primary-green));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
+      line-height: var(--line-height-tight);
     }
 
-    .login-header p {
+    .hero-subtitle {
       color: var(--granite-grey);
-      font-size: 1.1rem;
+      font-size: var(--font-size-xl);
       margin: 0;
+      font-weight: 400;
+      line-height: var(--line-height-relaxed);
     }
 
-    .login-options {
+    .hero-cta-section {
       display: flex;
       flex-direction: column;
-      gap: 1.5rem;
-      margin-top: 2rem;
+      gap: var(--space-lg);
+      margin: var(--space-2xl) 0;
     }
 
-    .login-btn {
+    .hero-cta-button {
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 1.5rem 2rem;
-      border-radius: var(--border-radius);
+      padding: var(--space-xl) var(--space-2xl);
+      border-radius: var(--border-radius-lg);
       text-decoration: none;
-      font-weight: 600;
-      font-size: 1.1rem;
+      font-weight: 700;
+      font-size: var(--font-size-lg);
       transition: var(--transition);
       position: relative;
       overflow: hidden;
       border: 2px solid transparent;
       backdrop-filter: blur(5px);
+      gap: var(--space-md);
     }
 
-    .login-btn::before {
+    .hero-cta-button::before {
       content: '';
       position: absolute;
       top: 50%;
       left: 50%;
       width: 0;
       height: 0;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
-      transition: all 0.6s ease;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 70%);
+      transition: var(--transition-slow);
       transform: translate(-50%, -50%);
       z-index: -1;
+      border-radius: 50%;
     }
 
-    .login-btn:hover::before {
-      width: 300px;
-      height: 300px;
+    .hero-cta-button:hover::before {
+      width: 400px;
+      height: 400px;
     }
 
-    .customer-login {
+    .customer-cta {
       background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
       color: var(--matt-black);
-      box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 255, 136, 0.3);
     }
 
-    .customer-login:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 255, 136, 0.4);
+    .customer-cta:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 255, 136, 0.4);
       border-color: rgba(0, 255, 136, 0.5);
+      color: var(--matt-black);
     }
 
-    .admin-login {
-      background: linear-gradient(135deg, rgba(255, 165, 0, 0.2), rgba(255, 140, 0, 0.3));
-      color: #ff8c00;
-      border: 2px solid rgba(255, 165, 0, 0.4);
-      box-shadow: 0 4px 15px rgba(255, 165, 0, 0.2);
+    .admin-cta {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(251, 191, 36, 0.3));
+      color: var(--admin-primary);
+      border: 2px solid rgba(245, 158, 11, 0.4);
+      box-shadow: 0 8px 32px rgba(245, 158, 11, 0.2);
     }
 
-    .admin-login:hover {
-      transform: translateY(-2px);
-      background: linear-gradient(135deg, rgba(255, 165, 0, 0.3), rgba(255, 140, 0, 0.4));
-      box-shadow: 0 8px 25px rgba(255, 165, 0, 0.3);
-      border-color: rgba(255, 165, 0, 0.6);
-      color: #ff6600;
+    .admin-cta:hover {
+      transform: translateY(-4px);
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(251, 191, 36, 0.4));
+      box-shadow: 0 12px 40px rgba(245, 158, 11, 0.3);
+      border-color: rgba(245, 158, 11, 0.6);
+      color: var(--admin-primary-hover);
     }
 
-    .login-icon {
-      width: 24px;
-      height: 24px;
-      margin-right: 12px;
+    .cta-icon {
+      width: 28px;
+      height: 28px;
       fill: currentColor;
     }
 
     .divider {
       position: relative;
-      margin: 2rem 0;
+      margin: var(--space-xl) 0;
       text-align: center;
       color: var(--granite-grey);
-      font-size: 0.9rem;
+      font-size: var(--font-size-sm);
       text-transform: uppercase;
       letter-spacing: 1px;
+      font-weight: 600;
     }
 
     .divider::before {
@@ -187,80 +208,103 @@
     }
 
     .divider span {
-      background: rgba(255, 255, 255, 0.95);
-      padding: 0 1rem;
+      background: rgba(255, 255, 255, 0.98);
+      padding: 0 var(--space-lg);
     }
 
-    .features-list {
-      margin-top: 2rem;
+    .features-preview {
+      margin-top: var(--space-2xl);
       text-align: left;
     }
 
-    .features-list h3 {
+    .features-preview h3 {
       color: var(--matt-black);
-      font-size: 1.1rem;
-      margin-bottom: 1rem;
+      font-size: var(--font-size-xl);
+      margin-bottom: var(--space-lg);
       text-align: center;
+      font-weight: 600;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-lg);
     }
 
     .feature-item {
       display: flex;
-      align-items: center;
-      margin-bottom: 0.75rem;
+      align-items: flex-start;
+      gap: var(--space-md);
       color: var(--granite-grey-dark);
-      font-size: 0.95rem;
+      font-size: var(--font-size-md);
+      padding: var(--space-md);
+      border-radius: var(--border-radius);
+      transition: var(--transition);
+    }
+
+    .feature-item:hover {
+      background: rgba(0, 255, 136, 0.05);
+      transform: translateX(4px);
     }
 
     .feature-icon {
-      width: 16px;
-      height: 16px;
-      margin-right: 10px;
+      width: 20px;
+      height: 20px;
       fill: var(--primary-green);
       flex-shrink: 0;
+      margin-top: 2px;
     }
 
-    /* Responsive design */
+    /* Enhanced Mobile Responsiveness */
     @media (max-width: 768px) {
-      .login-card {
-        padding: 2rem;
-        margin: 1rem;
+      .hero-card {
+        padding: var(--space-2xl);
+        margin: var(--space-lg);
+        max-width: none;
       }
 
-      .login-header h1 {
-        font-size: 2rem;
+      .hero-title {
+        font-size: var(--font-size-4xl);
       }
 
-      .login-btn {
-        padding: 1.25rem 1.5rem;
-        font-size: 1rem;
+      .hero-subtitle {
+        font-size: var(--font-size-lg);
+      }
+
+      .hero-cta-button {
+        padding: var(--space-lg) var(--space-xl);
+        font-size: var(--font-size-md);
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
       }
     }
 
-    /* Accessibility enhancements */
-    .login-btn:focus {
+    @media (max-width: 480px) {
+      .hero-card {
+        padding: var(--space-xl);
+        margin: var(--space-md);
+      }
+
+      .hero-title {
+        font-size: var(--font-size-3xl);
+      }
+
+      .hero-cta-button {
+        padding: var(--space-md) var(--space-lg);
+      }
+    }
+
+    /* Accessibility Focus Styles */
+    .hero-cta-button:focus {
       outline: 3px solid rgba(0, 255, 136, 0.5);
       outline-offset: 2px;
     }
 
-    .admin-login:focus {
-      outline: 3px solid rgba(255, 165, 0, 0.5);
+    .admin-cta:focus {
+      outline: 3px solid rgba(245, 158, 11, 0.5);
       outline-offset: 2px;
-    }
-
-    /* Animation for entrance */
-    @keyframes slideInUp {
-      0% {
-        transform: translateY(50px);
-        opacity: 0;
-      }
-      100% {
-        transform: translateY(0);
-        opacity: 1;
-      }
-    }
-
-    .login-card {
-      animation: slideInUp 0.6s ease-out;
     }
   </style>
 </head>
@@ -296,64 +340,80 @@
     </div>
   </header>
 
-  <!-- Main login container -->
-  <div class="login-container">
-    <div class="login-card">
-      <div class="login-header">
-        <h1>Welcome</h1>
-        <p>Choose your login type to access your dashboard</p>
+  <!-- Main hero container -->
+  <div class="hero-container">
+    <div class="hero-card">
+      <div class="hero-header">
+        <h1 class="hero-title">Welcome to Padel Club</h1>
+        <p class="hero-subtitle">Your premium destination for padel excellence, community, and innovation</p>
       </div>
 
-      <div class="login-options">
-        <!-- Customer Login Button -->
-        <a href="#" onclick="showCustomerLogin(); return false;" class="login-btn customer-login" 
+      <div class="hero-cta-section">
+        <!-- Customer Login CTA -->
+        <a href="#" onclick="showCustomerLogin(); return false;" class="hero-cta-button customer-cta" 
            role="button" tabindex="0" aria-label="Customer Login - Access booking, profile, and rewards">
-          <svg class="login-icon" viewBox="0 0 24 24">
+          <svg class="cta-icon" viewBox="0 0 24 24">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
           </svg>
           Customer Login
+          <span style="font-size: 0.85em; opacity: 0.8;">Book courts, earn rewards, connect</span>
         </a>
 
         <div class="divider">
           <span>or</span>
         </div>
 
-        <!-- Admin Login Button -->
-        <a href="#" onclick="showAdminLogin(); return false;" class="login-btn admin-login"
+        <!-- Admin Login CTA -->
+        <a href="#" onclick="showAdminLogin(); return false;" class="hero-cta-button admin-cta"
            role="button" tabindex="0" aria-label="Admin Login - Access management dashboard and analytics">
-          <svg class="login-icon" viewBox="0 0 24 24">
+          <svg class="cta-icon" viewBox="0 0 24 24">
             <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1M12 7C13.1 7 14 7.9 14 9C14 10.1 13.1 11 12 11C10.9 11 10 10.1 10 9C10 7.9 10.9 7 12 7M18 14.5V16.5H6V14.5C6 13.11 8.69 12.5 12 12.5C15.31 12.5 18 13.11 18 14.5Z"/>
           </svg>
-          Admin Login
+          Admin Access
+          <span style="font-size: 0.85em; opacity: 0.8;">Manage operations, view analytics</span>
         </a>
       </div>
 
-      <!-- Features preview -->
-      <div class="features-list">
-        <h3>Platform Features</h3>
-        <div class="feature-item">
-          <svg class="feature-icon" viewBox="0 0 24 24">
-            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
-          </svg>
-          Court booking and scheduling
-        </div>
-        <div class="feature-item">
-          <svg class="feature-icon" viewBox="0 0 24 24">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-          </svg>
-          XP points and rewards system
-        </div>
-        <div class="feature-item">
-          <svg class="feature-icon" viewBox="0 0 24 24">
-            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
-          Smart check-in with QR/NFC
-        </div>
-        <div class="feature-item">
-          <svg class="feature-icon" viewBox="0 0 24 24">
-            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
-          </svg>
-          Real-time analytics dashboard
+      <!-- Enhanced features preview -->
+      <div class="features-preview">
+        <h3>Platform Highlights</h3>
+        <div class="features-grid">
+          <div class="feature-item">
+            <svg class="feature-icon" viewBox="0 0 24 24">
+              <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+            </svg>
+            <div>
+              <strong>Smart Booking</strong>
+              <p style="margin: 0; font-size: 0.9em; color: var(--granite-grey);">Real-time court availability and intelligent scheduling</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <svg class="feature-icon" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            <div>
+              <strong>XP Rewards</strong>
+              <p style="margin: 0; font-size: 0.9em; color: var(--granite-grey);">Earn points and unlock exclusive perks</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <svg class="feature-icon" viewBox="0 0 24 24">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            <div>
+              <strong>Quick Check-in</strong>
+              <p style="margin: 0; font-size: 0.9em; color: var(--granite-grey);">QR code and NFC touch access</p>
+            </div>
+          </div>
+          <div class="feature-item">
+            <svg class="feature-icon" viewBox="0 0 24 24">
+              <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+            </svg>
+            <div>
+              <strong>Analytics Hub</strong>
+              <p style="margin: 0; font-size: 0.9em; color: var(--granite-grey);">Real-time insights and performance tracking</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
