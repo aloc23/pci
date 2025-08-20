@@ -84,14 +84,284 @@ function initializeGroupBooking() {
 
 function toggleGroupBooking() {
   const checkbox = document.getElementById('groupBooking');
-  const section = document.getElementById('groupBookingSection');
   
   if (checkbox.checked) {
-    section.style.display = 'block';
-    updateGroupPlayers();
-  } else {
-    section.style.display = 'none';
+    openGroupBookingModal();
   }
+}
+
+// Enhanced Group Booking Modal Functions
+function openGroupBookingModal() {
+  const modal = document.getElementById('groupBookingModal');
+  modal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  
+  // Initialize modal
+  initializeGroupModal();
+}
+
+function closeGroupBookingModal() {
+  const modal = document.getElementById('groupBookingModal');
+  modal.classList.remove('show');
+  document.body.style.overflow = 'auto';
+  
+  // Uncheck the group booking checkbox
+  const checkbox = document.getElementById('groupBooking');
+  if (checkbox) {
+    checkbox.checked = false;
+  }
+}
+
+function initializeGroupModal() {
+  // Set up group size selector
+  const sizeBtns = document.querySelectorAll('.size-btn');
+  sizeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      sizeBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      generatePlayerInputs(parseInt(btn.dataset.size));
+    });
+  });
+  
+  // Set up payment method change
+  const paymentRadios = document.querySelectorAll('input[name="groupPayment"]');
+  paymentRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      updatePaymentDisplay();
+    });
+  });
+  
+  // Initialize with default 4 players
+  generatePlayerInputs(4);
+  updatePaymentDisplay();
+}
+
+function generatePlayerInputs(groupSize) {
+  const container = document.getElementById('playersContainer');
+  container.innerHTML = '';
+  
+  for (let i = 1; i <= groupSize; i++) {
+    const playerDiv = document.createElement('div');
+    playerDiv.className = 'player-input';
+    
+    const isMainPlayer = i === 1;
+    const statusText = isMainPlayer ? '(You)' : 'Invited';
+    
+    playerDiv.innerHTML = `
+      <input 
+        type="text" 
+        placeholder="Player ${i} Name" 
+        id="groupPlayer${i}"
+        ${isMainPlayer ? 'value="' + (document.getElementById('playerName')?.value || '') + '"' : ''}
+        ${isMainPlayer ? 'readonly' : ''}
+      >
+      <input 
+        type="email" 
+        placeholder="Email for payment link" 
+        id="groupPlayerEmail${i}"
+        ${isMainPlayer ? 'style="display: none;"' : ''}
+      >
+      <span class="player-status">${statusText}</span>
+    `;
+    
+    container.appendChild(playerDiv);
+  }
+}
+
+function updatePaymentDisplay() {
+  const splitPayment = document.querySelector('input[name="groupPayment"]:checked').value === 'split';
+  const splitDetails = document.getElementById('splitPaymentDetails');
+  const breakdown = document.getElementById('paymentBreakdown');
+  
+  if (splitPayment) {
+    splitDetails.style.display = 'block';
+    
+    // Calculate split amount
+    const duration = document.getElementById('durationSelect')?.value || 60;
+    const totalPrice = PRICING[duration] || 35;
+    const groupSize = parseInt(document.querySelector('.size-btn.active').dataset.size);
+    const perPersonAmount = (totalPrice / groupSize).toFixed(2);
+    
+    breakdown.innerHTML = `
+      <div class="payment-split-item">
+        <span>Total Booking Cost:</span>
+        <span>€${totalPrice}</span>
+      </div>
+      <div class="payment-split-item">
+        <span>Per Person (${groupSize} players):</span>
+        <span class="highlight">€${perPersonAmount}</span>
+      </div>
+      <div class="payment-note">
+        <small>Payment links will be sent to each player's email</small>
+      </div>
+    `;
+  } else {
+    splitDetails.style.display = 'none';
+  }
+}
+
+function suggestPartners() {
+  const suggestedPartners = [
+    { name: 'Maria Garcia', skill: 'Advanced', lastPlayed: '2 days ago' },
+    { name: 'Carlos Rodriguez', skill: 'Intermediate', lastPlayed: '1 week ago' },
+    { name: 'Sophie Chen', skill: 'Advanced', lastPlayed: '3 days ago' },
+    { name: 'Jake Thompson', skill: 'Beginner', lastPlayed: '5 days ago' }
+  ];
+  
+  const partnersHtml = suggestedPartners.map(partner => `
+    <div class="suggested-partner" onclick="selectSuggestedPartner('${partner.name}', '${partner.skill}')">
+      <div class="partner-info">
+        <strong>${partner.name}</strong>
+        <span class="skill-level">${partner.skill}</span>
+        <span class="last-played">Last played: ${partner.lastPlayed}</span>
+      </div>
+      <button class="invite-partner-btn">Invite</button>
+    </div>
+  `).join('');
+  
+  showToast(`
+    <div class="partners-suggestion">
+      <h4>Suggested Partners</h4>
+      ${partnersHtml}
+    </div>
+  `, 'info', 8000);
+}
+
+function selectSuggestedPartner(name, skill) {
+  // Find first empty player input
+  const playerInputs = document.querySelectorAll('#playersContainer input[type="text"]');
+  for (let i = 1; i < playerInputs.length; i++) { // Skip first (main player)
+    if (!playerInputs[i].value) {
+      playerInputs[i].value = name;
+      showToast(`${name} added to your group!`, 'success');
+      break;
+    }
+  }
+}
+
+function shareViaEmail() {
+  const groupSize = document.querySelector('.size-btn.active').dataset.size;
+  const court = document.getElementById('courtSelect')?.value || 'TBD';
+  const date = document.getElementById('bookingDate')?.value || 'TBD';
+  const time = document.getElementById('timeSelect')?.value || 'TBD';
+  
+  const subject = `Padel Club Group Booking Invitation`;
+  const body = `Hi! You're invited to join our ${groupSize}-player padel game at Padel Club.
+  
+Details:
+- Court: ${court}
+- Date: ${date}
+- Time: ${time}
+- Players: ${groupSize}
+
+Click here to confirm your spot: ${window.location.origin}/booking.html
+
+See you on the court!`;
+
+  const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.open(mailtoLink);
+  
+  showToast('Email invitation opened!', 'success');
+}
+
+function shareViaWhatsApp() {
+  const groupSize = document.querySelector('.size-btn.active').dataset.size;
+  const court = document.getElementById('courtSelect')?.value || 'TBD';
+  const date = document.getElementById('bookingDate')?.value || 'TBD';
+  const time = document.getElementById('timeSelect')?.value || 'TBD';
+  
+  const message = `🏓 Padel Game Invitation!
+
+You're invited to join our ${groupSize}-player game:
+📍 Court: ${court}
+📅 Date: ${date}
+⏰ Time: ${time}
+
+Confirm your spot: ${window.location.origin}/booking.html
+
+Let's play! 🎾`;
+
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  window.open(whatsappUrl, '_blank');
+  
+  showToast('WhatsApp invitation opened!', 'success');
+}
+
+function copyBookingLink() {
+  const bookingLink = `${window.location.origin}/booking.html?group=true`;
+  
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(bookingLink).then(() => {
+      showToast('Booking link copied to clipboard!', 'success');
+    });
+  } else {
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = bookingLink;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    showToast('Booking link copied to clipboard!', 'success');
+  }
+}
+
+function confirmGroupBooking() {
+  const groupSize = parseInt(document.querySelector('.size-btn.active').dataset.size);
+  const paymentMethod = document.querySelector('input[name="groupPayment"]:checked').value;
+  
+  // Collect player details
+  const players = [];
+  for (let i = 1; i <= groupSize; i++) {
+    const nameInput = document.getElementById(`groupPlayer${i}`);
+    const emailInput = document.getElementById(`groupPlayerEmail${i}`);
+    
+    if (nameInput && nameInput.value.trim()) {
+      players.push({
+        name: nameInput.value.trim(),
+        email: emailInput ? emailInput.value.trim() : '',
+        isMainPlayer: i === 1
+      });
+    }
+  }
+  
+  if (players.length < 2) {
+    showToast('Please add at least one other player', 'error');
+    return;
+  }
+  
+  // Close modal
+  closeGroupBookingModal();
+  
+  // Show progress indicator
+  const steps = [
+    'Creating group booking...',
+    'Sending invitations...',
+    paymentMethod === 'split' ? 'Setting up split payments...' : 'Processing payment...',
+    'Confirming reservation...',
+    'Booking complete!'
+  ];
+  
+  const progressIndicator = showProgressIndicator('Group Booking', steps);
+  
+  setTimeout(() => {
+    progressIndicator.close();
+    
+    const playerNames = players.map(p => p.name).join(', ');
+    showToast(`🎉 Group booking confirmed! Invitations sent to: ${playerNames}`, 'success', 8000);
+    
+    // Update the main form to indicate group booking
+    const groupCheckbox = document.getElementById('groupBooking');
+    if (groupCheckbox) {
+      groupCheckbox.checked = true;
+    }
+    
+    // Populate group size in main form if it exists
+    const groupSizeSelect = document.getElementById('groupSize');
+    if (groupSizeSelect) {
+      groupSizeSelect.value = groupSize;
+    }
+  }, 5000);
 }
 
 function updateGroupPlayers() {
