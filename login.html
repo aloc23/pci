@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Padel Club</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="booking.css">
+  <style>
+    /* Login-specific styles */
+    .login-container {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--matt-black) 0%, var(--matt-black-light) 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(ellipse at center, rgba(0, 255, 136, 0.1) 0%, transparent 70%);
+      z-index: 1;
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: var(--border-radius);
+      padding: 3rem;
+      box-shadow: var(--shadow-lg), 0 0 30px rgba(0, 255, 136, 0.2);
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 255, 136, 0.2);
+    }
+
+    .login-header {
+      margin-bottom: 2rem;
+    }
+
+    .login-header h1 {
+      color: var(--matt-black);
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, var(--matt-black), var(--granite-grey-dark));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .login-header p {
+      color: var(--granite-grey);
+      font-size: 1.1rem;
+      margin: 0;
+    }
+
+    .login-options {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .login-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 2rem;
+      border-radius: var(--border-radius);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      border: 2px solid transparent;
+      backdrop-filter: blur(5px);
+    }
+
+    .login-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+      transition: all 0.6s ease;
+      transform: translate(-50%, -50%);
+      z-index: -1;
+    }
+
+    .login-btn:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .customer-login {
+      background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+      color: var(--matt-black);
+      box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+    }
+
+    .customer-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 255, 136, 0.4);
+      border-color: rgba(0, 255, 136, 0.5);
+    }
+
+    .admin-login {
+      background: linear-gradient(135deg, rgba(255, 165, 0, 0.2), rgba(255, 140, 0, 0.3));
+      color: #ff8c00;
+      border: 2px solid rgba(255, 165, 0, 0.4);
+      box-shadow: 0 4px 15px rgba(255, 165, 0, 0.2);
+    }
+
+    .admin-login:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(135deg, rgba(255, 165, 0, 0.3), rgba(255, 140, 0, 0.4));
+      box-shadow: 0 8px 25px rgba(255, 165, 0, 0.3);
+      border-color: rgba(255, 165, 0, 0.6);
+      color: #ff6600;
+    }
+
+    .login-icon {
+      width: 24px;
+      height: 24px;
+      margin-right: 12px;
+      fill: currentColor;
+    }
+
+    .divider {
+      position: relative;
+      margin: 2rem 0;
+      text-align: center;
+      color: var(--granite-grey);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .divider::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--granite-grey-light), transparent);
+      z-index: -1;
+    }
+
+    .divider span {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 0 1rem;
+    }
+
+    .features-list {
+      margin-top: 2rem;
+      text-align: left;
+    }
+
+    .features-list h3 {
+      color: var(--matt-black);
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      color: var(--granite-grey-dark);
+      font-size: 0.95rem;
+    }
+
+    .feature-icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 10px;
+      fill: var(--primary-green);
+      flex-shrink: 0;
+    }
+
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .login-card {
+        padding: 2rem;
+        margin: 1rem;
+      }
+
+      .login-header h1 {
+        font-size: 2rem;
+      }
+
+      .login-btn {
+        padding: 1.25rem 1.5rem;
+        font-size: 1rem;
+      }
+    }
+
+    /* Accessibility enhancements */
+    .login-btn:focus {
+      outline: 3px solid rgba(0, 255, 136, 0.5);
+      outline-offset: 2px;
+    }
+
+    .admin-login:focus {
+      outline: 3px solid rgba(255, 165, 0, 0.5);
+      outline-offset: 2px;
+    }
+
+    /* Animation for entrance */
+    @keyframes slideInUp {
+      0% {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .login-card {
+      animation: slideInUp 0.6s ease-out;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header with navigation -->
+  <header>
+    <div class="header-content">
+      <div class="logo-section">
+        <img src="logo.svg" alt="Padel Club Logo">
+        <h1>Padel Club</h1>
+      </div>
+      <nav>
+        <a href="login.html" class="nav-link active">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          Login
+        </a>
+        <!-- Login buttons always visible in header for easy access -->
+        <button onclick="showCustomerLogin()" class="nav-link customer-login-btn" aria-label="Customer Login">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          Customer Login
+        </button>
+        <button onclick="showAdminLogin()" class="nav-link admin-login-btn" aria-label="Admin Login">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1M12 7C13.1 7 14 7.9 14 9C14 10.1 13.1 11 12 11C10.9 11 10 10.1 10 9C10 7.9 10.9 7 12 7M18 14.5V16.5H6V14.5C6 13.11 8.69 12.5 12 12.5C15.31 12.5 18 13.11 18 14.5Z"/>
+          </svg>
+          Admin Login
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main login container -->
+  <div class="login-container">
+    <div class="login-card">
+      <div class="login-header">
+        <h1>Welcome</h1>
+        <p>Choose your login type to access your dashboard</p>
+      </div>
+
+      <div class="login-options">
+        <!-- Customer Login Button -->
+        <a href="#" onclick="showCustomerLogin(); return false;" class="login-btn customer-login" 
+           role="button" tabindex="0" aria-label="Customer Login - Access booking, profile, and rewards">
+          <svg class="login-icon" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          Customer Login
+        </a>
+
+        <div class="divider">
+          <span>or</span>
+        </div>
+
+        <!-- Admin Login Button -->
+        <a href="#" onclick="showAdminLogin(); return false;" class="login-btn admin-login"
+           role="button" tabindex="0" aria-label="Admin Login - Access management dashboard and analytics">
+          <svg class="login-icon" viewBox="0 0 24 24">
+            <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1M12 7C13.1 7 14 7.9 14 9C14 10.1 13.1 11 12 11C10.9 11 10 10.1 10 9C10 7.9 10.9 7 12 7M18 14.5V16.5H6V14.5C6 13.11 8.69 12.5 12 12.5C15.31 12.5 18 13.11 18 14.5Z"/>
+          </svg>
+          Admin Login
+        </a>
+      </div>
+
+      <!-- Features preview -->
+      <div class="features-list">
+        <h3>Platform Features</h3>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24">
+            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+          </svg>
+          Court booking and scheduling
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+          XP points and rewards system
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Smart check-in with QR/NFC
+        </div>
+        <div class="feature-item">
+          <svg class="feature-icon" viewBox="0 0 24 24">
+            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+          </svg>
+          Real-time analytics dashboard
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer Login Modal -->
+  <div id="customerLoginModal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Customer Login</h2>
+        <button class="modal-close" onclick="closeCustomerModal()" aria-label="Close modal">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="login-form">
+          <div class="form-group">
+            <label for="customerEmail">Email or Member ID:</label>
+            <input type="text" id="customerEmail" placeholder="Enter your email or member ID" required>
+          </div>
+          <div class="form-group">
+            <label for="customerPassword">Password:</label>
+            <input type="password" id="customerPassword" placeholder="Enter your password" required>
+          </div>
+          <div class="demo-notice">
+            <p><small>Demo Mode: Use any credentials or click "Demo Login"</small></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeCustomerModal()">Cancel</button>
+        <button class="btn-secondary" onclick="demoCustomerLogin()">Demo Login</button>
+        <button class="btn-primary" onclick="customerLogin()">Login</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Login Modal (reusing existing modal structure) -->
+  <div id="adminLoginModal" class="modal-overlay">
+    <div class="modal-content admin-modal">
+      <div class="modal-header">
+        <h2>Admin Access</h2>
+        <button class="modal-close" onclick="closeAdminModal()" aria-label="Close modal">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="admin-login-form">
+          <div class="form-group">
+            <label for="adminUsername">Username:</label>
+            <input type="text" id="adminUsername" placeholder="Enter admin username" required>
+          </div>
+          <div class="form-group">
+            <label for="adminPassword">Password:</label>
+            <input type="password" id="adminPassword" placeholder="Enter admin password" required>
+          </div>
+          <div class="demo-notice">
+            <p><small>Demo Mode: Use any credentials or click "Demo Login"</small></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeAdminModal()">Cancel</button>
+        <button class="btn-secondary" onclick="demoAdminLogin()">Demo Login</button>
+        <button class="btn-primary" onclick="adminLogin()">Login</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>Padel Club &copy; 2025</p>
+  </footer>
+
+  <script src="script.js"></script>
+  <script src="booking.js"></script>
+  <script>
+    /**
+     * Login page functionality
+     * Handles customer and admin authentication flows
+     */
+
+    // Customer login functions
+    function showCustomerLogin() {
+      const modal = document.getElementById('customerLoginModal');
+      modal.classList.add('show');
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      
+      // Focus on email field for accessibility
+      setTimeout(() => {
+        document.getElementById('customerEmail').focus();
+      }, 100);
+      
+      // Add entrance animation
+      const modalContent = modal.querySelector('.modal-content');
+      modalContent.style.animation = 'fadeInScale 0.3s ease-out';
+    }
+
+    function closeCustomerModal() {
+      const modal = document.getElementById('customerLoginModal');
+      const modalContent = modal.querySelector('.modal-content');
+      
+      modalContent.style.animation = 'fadeOut 0.3s ease-out';
+      setTimeout(() => {
+        modal.classList.remove('show');
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        
+        // Clear form
+        document.getElementById('customerEmail').value = '';
+        document.getElementById('customerPassword').value = '';
+      }, 300);
+    }
+
+    function demoCustomerLogin() {
+      // Simulate customer login for demo
+      localStorage.setItem('isCustomer', 'true');
+      localStorage.setItem('userRole', 'customer');
+      localStorage.setItem('customerName', 'Demo Customer');
+      
+      showNeonToast('Customer login successful! Redirecting to dashboard...', 'success');
+      
+      setTimeout(() => {
+        closeCustomerModal();
+        window.location.href = 'index.html';
+      }, 1500);
+    }
+
+    function customerLogin() {
+      const email = document.getElementById('customerEmail').value;
+      const password = document.getElementById('customerPassword').value;
+      
+      if (email && password) {
+        demoCustomerLogin(); // For demo purposes
+      } else {
+        showNeonToast('Please enter both email and password', 'error');
+      }
+    }
+
+    // Admin login functions (enhanced from existing)
+    function showAdminLogin() {
+      const modal = document.getElementById('adminLoginModal');
+      modal.classList.add('show');
+      modal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+      
+      // Focus on username field for accessibility
+      setTimeout(() => {
+        document.getElementById('adminUsername').focus();
+      }, 100);
+      
+      // Add entrance animation
+      const modalContent = modal.querySelector('.modal-content');
+      modalContent.style.animation = 'fadeInScale 0.3s ease-out';
+    }
+
+    function closeAdminModal() {
+      const modal = document.getElementById('adminLoginModal');
+      const modalContent = modal.querySelector('.modal-content');
+      
+      modalContent.style.animation = 'fadeOut 0.3s ease-out';
+      setTimeout(() => {
+        modal.classList.remove('show');
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        
+        // Clear form
+        document.getElementById('adminUsername').value = '';
+        document.getElementById('adminPassword').value = '';
+      }, 300);
+    }
+
+    function demoAdminLogin() {
+      // Simulate admin login for demo
+      localStorage.setItem('isAdmin', 'true');
+      localStorage.setItem('userRole', 'admin');
+      
+      showNeonToast('Admin access granted! Redirecting to admin dashboard...', 'success');
+      
+      setTimeout(() => {
+        closeAdminModal();
+        window.location.href = 'admin.html';
+      }, 1500);
+    }
+
+    function adminLogin() {
+      const username = document.getElementById('adminUsername').value;
+      const password = document.getElementById('adminPassword').value;
+      
+      if (username && password) {
+        demoAdminLogin(); // For demo purposes
+      } else {
+        showNeonToast('Please enter both username and password', 'error');
+      }
+    }
+
+    // Toast notification function (simplified version)
+    function showNeonToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = `neon-toast ${type}`;
+      toast.textContent = message;
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 1rem 1.5rem;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+        z-index: 10000;
+        animation: slideInRight 0.3s ease-out;
+        max-width: 300px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+      `;
+      
+      if (type === 'success') {
+        toast.style.background = 'linear-gradient(135deg, var(--primary-green), var(--accent-green))';
+        toast.style.color = 'var(--matt-black)';
+      } else if (type === 'error') {
+        toast.style.background = 'linear-gradient(135deg, #dc3545, #c82333)';
+      }
+      
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'slideOutRight 0.3s ease-out';
+        setTimeout(() => {
+          if (toast.parentNode) {
+            document.body.removeChild(toast);
+          }
+        }, 300);
+      }, 3000);
+    }
+
+    // Keyboard accessibility
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeCustomerModal();
+        closeAdminModal();
+      }
+    });
+
+    // Check if user is already logged in and redirect
+    document.addEventListener('DOMContentLoaded', function() {
+      const userRole = localStorage.getItem('userRole');
+      if (userRole === 'customer') {
+        window.location.href = 'index.html';
+      } else if (userRole === 'admin') {
+        window.location.href = 'admin.html';
+      }
+    });
+  </script>
+</body>
+</html>
