@@ -360,28 +360,36 @@ nav {
   flex-wrap: wrap;
 }
 
-nav a {
+nav a, nav button {
   color: var(--granite-grey-light);
   text-decoration: none;
+  background: transparent;
+  border: 2px solid transparent;
   font-weight: 500;
   font-size: 0.9rem;
   padding: 0.75rem 1rem;
   border-radius: var(--border-radius-sm);
-  transition: var(--transition);
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
 }
 
-nav a:hover {
+nav a:hover, nav button:hover {
   background: var(--matt-black-light);
   color: var(--white);
   transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 nav a.active {
   background: var(--primary-green);
   color: var(--matt-black);
   font-weight: 600;
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+  text-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
 }
 
 nav a.active::before {

@@ -54,25 +54,62 @@ function initializeBookingPage() {
   checkAdminAccess();
 }
 
-// View switching functionality
+// View switching functionality with enhanced animations
 function switchView(viewType) {
   const formView = document.getElementById('booking');
   const calendarView = document.getElementById('calendar-view');
   const formBtn = document.getElementById('formViewBtn');
   const calendarBtn = document.getElementById('calendarViewBtn');
+  const currentView = formView.classList.contains('active') ? formView : calendarView;
+  const targetView = viewType === 'form' ? formView : calendarView;
   
+  // Update button states with animation
   if (viewType === 'form') {
-    formView.classList.add('active');
-    calendarView.classList.remove('active');
     formBtn.classList.add('active');
     calendarBtn.classList.remove('active');
   } else {
-    formView.classList.remove('active');
-    calendarView.classList.add('active');
     formBtn.classList.remove('active');
     calendarBtn.classList.add('active');
-    drawCalendar();
   }
+  
+  // Animate view transition
+  if (currentView !== targetView) {
+    // Fade out current view
+    currentView.style.opacity = '0';
+    currentView.style.transform = 'translateX(-20px)';
+    
+    setTimeout(() => {
+      currentView.classList.remove('active');
+      targetView.classList.add('active');
+      
+      // Fade in new view
+      targetView.style.opacity = '0';
+      targetView.style.transform = 'translateX(20px)';
+      
+      requestAnimationFrame(() => {
+        targetView.style.transition = 'all 0.3s ease';
+        targetView.style.opacity = '1';
+        targetView.style.transform = 'translateX(0)';
+        
+        setTimeout(() => {
+          targetView.style.transition = '';
+          currentView.style.transition = '';
+          currentView.style.opacity = '';
+          currentView.style.transform = '';
+        }, 300);
+      });
+      
+      if (viewType === 'calendar') {
+        setTimeout(() => drawCalendar(), 100);
+      }
+    }, 150);
+  }
+  
+  // Add ripple effect to button
+  addRippleEffect(viewType === 'form' ? formBtn : calendarBtn);
+  
+  // Show contextual help
+  showContextualHelp(viewType);
 }
 
 // Group booking functionality
@@ -327,6 +364,270 @@ function generateSampleHistory() {
   
   localStorage.setItem('bookingHistory', JSON.stringify(sampleHistory));
 }
+
+// Enhanced microinteractions and animations
+function addRippleEffect(element) {
+  const ripple = document.createElement('div');
+  ripple.style.cssText = `
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(0, 255, 136, 0.6);
+    transform: scale(0);
+    animation: neonRipple 0.6s ease-out;
+    pointer-events: none;
+    z-index: 1;
+  `;
+  
+  const rect = element.getBoundingClientRect();
+  const size = Math.max(rect.width, rect.height);
+  ripple.style.width = ripple.style.height = size + 'px';
+  ripple.style.left = (rect.width / 2 - size / 2) + 'px';
+  ripple.style.top = (rect.height / 2 - size / 2) + 'px';
+  
+  element.style.position = 'relative';
+  element.appendChild(ripple);
+  
+  setTimeout(() => {
+    if (ripple.parentNode) {
+      ripple.parentNode.removeChild(ripple);
+    }
+  }, 600);
+}
+
+// Admin modal functions
+function openAdminModal() {
+  const modal = document.getElementById('adminLoginModal');
+  modal.classList.add('show');
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  
+  // Add entrance animation
+  const modalContent = modal.querySelector('.modal-content');
+  modalContent.style.animation = 'fadeInScale 0.3s ease-out';
+}
+
+function closeAdminModal() {
+  const modal = document.getElementById('adminLoginModal');
+  const modalContent = modal.querySelector('.modal-content');
+  
+  modalContent.style.animation = 'fadeOut 0.3s ease-out';
+  setTimeout(() => {
+    modal.classList.remove('show');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    
+    // Clear form
+    document.getElementById('adminUsername').value = '';
+    document.getElementById('adminPassword').value = '';
+  }, 300);
+}
+
+function demoAdminLogin() {
+  // Simulate admin login for demo
+  localStorage.setItem('isAdmin', 'true');
+  showNeonToast('Admin access granted! Redirecting...', 'success');
+  
+  setTimeout(() => {
+    closeAdminModal();
+    window.location.href = 'admin.html';
+  }, 1500);
+}
+
+function adminLogin() {
+  const username = document.getElementById('adminUsername').value;
+  const password = document.getElementById('adminPassword').value;
+  
+  if (username && password) {
+    demoAdminLogin(); // For demo purposes
+  } else {
+    showNeonToast('Please enter both username and password', 'error');
+  }
+}
+
+// Neon toast notifications
+function showNeonToast(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.className = `neon-toast ${type}`;
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, var(--matt-black-light), var(--matt-black));
+    color: var(--primary-green);
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius-sm);
+    border: 2px solid rgba(0, 255, 136, 0.5);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+    z-index: 3000;
+    font-weight: 500;
+    text-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
+    animation: slideInRight 0.3s ease-out;
+    max-width: 300px;
+  `;
+  
+  if (type === 'error') {
+    toast.style.borderColor = 'rgba(255, 107, 107, 0.5)';
+    toast.style.color = '#ff6b6b';
+    toast.style.boxShadow = '0 0 20px rgba(255, 107, 107, 0.3)';
+  } else if (type === 'success') {
+    toast.style.borderColor = 'rgba(0, 255, 136, 0.7)';
+    toast.style.boxShadow = '0 0 25px rgba(0, 255, 136, 0.4)';
+  }
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.animation = 'slideOutRight 0.3s ease-out';
+    setTimeout(() => {
+      if (toast.parentNode) {
+        toast.parentNode.removeChild(toast);
+      }
+    }, 300);
+  }, 3000);
+}
+
+// Contextual help and tooltips
+function showContextualHelp(viewType) {
+  const helpMessage = viewType === 'form' 
+    ? 'Fill out the form to book a court. Select date, time, and court.' 
+    : 'Click on available slots to book. Drag booked slots to reschedule.';
+  
+  showNeonTooltip(helpMessage, document.querySelector('.view-btn.active'));
+}
+
+function showNeonTooltip(text, element) {
+  const tooltip = document.getElementById('neonTooltip');
+  tooltip.textContent = text;
+  
+  const rect = element.getBoundingClientRect();
+  tooltip.style.left = (rect.left + rect.width / 2) + 'px';
+  tooltip.style.top = (rect.bottom + 10) + 'px';
+  tooltip.style.transform = 'translateX(-50%)';
+  
+  tooltip.classList.add('show');
+  
+  setTimeout(() => {
+    tooltip.classList.remove('show');
+  }, 3000);
+}
+
+// Mobile action bar functions
+function quickBook() {
+  const now = new Date();
+  const nextHour = new Date(now.getTime() + 60 * 60 * 1000);
+  const time = nextHour.getHours() + ':00';
+  
+  // Auto-fill form with next available slot
+  document.getElementById('bookingDate').value = now.toISOString().split('T')[0];
+  document.getElementById('timeSelect').value = time;
+  document.getElementById('courtSelect').value = '1';
+  
+  switchView('form');
+  showNeonToast('Quick booking form filled!', 'success');
+  addRippleEffect(document.querySelector('.action-btn.quick-book'));
+}
+
+function showHelp() {
+  const helpText = `
+    📅 Calendar View: Click available slots to book
+    📝 Form View: Fill out booking details
+    📱 Mobile: Use these quick actions
+    🎯 Quick Book: Auto-fill next available slot
+  `;
+  showNeonToast(helpText, 'info');
+  addRippleEffect(document.querySelector('.action-btn.help'));
+}
+
+// Enhanced calendar pulse animation on booking updates
+function pulseCalendarOnUpdate() {
+  const calendar = document.querySelector('.calendar-container');
+  if (calendar) {
+    calendar.style.animation = 'neonPulse 1s ease-in-out';
+    setTimeout(() => {
+      calendar.style.animation = '';
+    }, 1000);
+  }
+}
+
+// Enhanced booking function with animations
+function bookCourt() {
+  const date = document.getElementById('bookingDate').value;
+  const court = document.getElementById('courtSelect').value;
+  const time = document.getElementById('timeSelect').value;
+  const duration = document.getElementById('duration').value;
+  const playerName = document.getElementById('playerName').value;
+  
+  if (!date || !court || !time || !playerName) {
+    showNeonToast('Please fill in all required fields', 'error');
+    return;
+  }
+  
+  // Add ripple effect to book button
+  addRippleEffect(document.querySelector('.book-button'));
+  
+  // Create booking object
+  const booking = {
+    court: parseInt(court),
+    date: date,
+    time: time,
+    duration: parseInt(duration),
+    player: playerName,
+    createdAt: new Date().toISOString()
+  };
+  
+  // Add to bookings array
+  bookings.push(booking);
+  localStorage.setItem('bookings', JSON.stringify(bookings));
+  
+  // Show success message with animation
+  showNeonToast(`Court ${court} booked successfully for ${formatTime(time)}!`, 'success');
+  
+  // Pulse calendar and refresh views
+  pulseCalendarOnUpdate();
+  displayBookings();
+  drawCalendar();
+  
+  // Clear form
+  setTimeout(() => {
+    document.getElementById('bookingDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('courtSelect').value = '';
+    document.getElementById('timeSelect').value = '';
+    document.getElementById('playerName').value = '';
+    loadAvailableTimes();
+  }, 1000);
+}
+
+// Initialize tooltips on page load
+document.addEventListener('DOMContentLoaded', function() {
+  // Add tooltip functionality to elements with data-tooltip
+  document.querySelectorAll('[data-tooltip]').forEach(element => {
+    element.addEventListener('mouseenter', function() {
+      showNeonTooltip(this.dataset.tooltip, this);
+    });
+  });
+  
+  // Add ripple effect to all interactive elements
+  document.querySelectorAll('button, .nav-link, .view-btn, .payment-option').forEach(element => {
+    element.addEventListener('click', function(e) {
+      if (!this.classList.contains('no-ripple')) {
+        addRippleEffect(this);
+      }
+    });
+  });
+  
+  // Close modals on escape key
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      if (document.getElementById('adminLoginModal').classList.contains('show')) {
+        closeAdminModal();
+      }
+      if (document.getElementById('groupBookingModal').classList.contains('show')) {
+        closeGroupBookingModal();
+      }
+    }
+  });
+});
 
 function displayBookingHistory(filter = 'all') {
   const history = JSON.parse(localStorage.getItem('bookingHistory') || '[]');

@@ -51,12 +51,12 @@
           </svg>
           Locker
         </a>
-        <a href="admin.html" class="nav-link admin-only" id="adminLink" style="display: none;">
+        <button onclick="openAdminModal()" class="nav-link admin-login-btn" id="adminLoginBtn">
           <svg class="nav-icon" viewBox="0 0 24 24">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
           </svg>
           Admin
-        </a>
+        </button>
       </nav>
     </div>
   </header>
@@ -336,6 +336,65 @@
       </div>
     </div>
   </div>
+
+  <!-- Admin Login Modal -->
+  <div id="adminLoginModal" class="modal-overlay">
+    <div class="modal-content admin-modal">
+      <div class="modal-header">
+        <h2>Admin Access</h2>
+        <button class="modal-close" onclick="closeAdminModal()">&times;</button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="admin-login-form">
+          <div class="form-group">
+            <label for="adminUsername">Username:</label>
+            <input type="text" id="adminUsername" placeholder="Enter admin username" required>
+          </div>
+          <div class="form-group">
+            <label for="adminPassword">Password:</label>
+            <input type="password" id="adminPassword" placeholder="Enter admin password" required>
+          </div>
+          <div class="demo-notice">
+            <p><small>Demo Mode: Use any credentials or click "Demo Login"</small></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeAdminModal()">Cancel</button>
+        <button class="btn-secondary" onclick="demoAdminLogin()">Demo Login</button>
+        <button class="btn-primary" onclick="adminLogin()">Login</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Action Bar -->
+  <div class="mobile-action-bar" id="mobileActionBar">
+    <button class="action-btn quick-book" onclick="quickBook()" data-tooltip="Quick Book">
+      <svg class="action-icon" viewBox="0 0 24 24">
+        <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+      </svg>
+    </button>
+    <button class="action-btn calendar-view" onclick="switchView('calendar')" data-tooltip="Calendar">
+      <svg class="action-icon" viewBox="0 0 24 24">
+        <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+      </svg>
+    </button>
+    <button class="action-btn form-view" onclick="switchView('form')" data-tooltip="Form">
+      <svg class="action-icon" viewBox="0 0 24 24">
+        <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+      </svg>
+    </button>
+    <button class="action-btn help" onclick="showHelp()" data-tooltip="Help">
+      <svg class="action-icon" viewBox="0 0 24 24">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Neon Tooltip -->
+  <div class="neon-tooltip" id="neonTooltip"></div>
 
   <footer>
     <p>Padel Club &copy; 2025</p>
