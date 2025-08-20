@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeBookingPage();
   initializeCalendarView();
   initializeGroupBooking();
+  initializeBookingHistory();
 });
 
 let currentWeekStart = new Date();
@@ -237,6 +238,230 @@ function selectSuggestedPartner(name, skill) {
       break;
     }
   }
+}
+
+// Booking History Timeline
+function initializeBookingHistory() {
+  generateSampleHistory();
+  displayBookingHistory();
+  
+  // Set up filter buttons
+  const filterButtons = document.querySelectorAll('.timeline-filter');
+  filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      filterButtons.forEach(b => b.classList.remove('active'));
+      button.classList.add('active');
+      filterBookingHistory(button.dataset.filter);
+    });
+  });
+}
+
+function generateSampleHistory() {
+  const sampleHistory = [
+    {
+      id: 1,
+      court: 'Court 1',
+      date: '2025-08-20',
+      time: '10:00',
+      duration: 60,
+      player: 'Alex Johnson',
+      price: 35,
+      status: 'upcoming',
+      paymentMethod: 'Apple Pay',
+      groupSize: 1,
+      createdAt: '2025-08-19T15:30:00Z'
+    },
+    {
+      id: 2,
+      court: 'Court 3',
+      date: '2025-08-19',
+      time: '16:00',
+      duration: 90,
+      player: 'Alex Johnson',
+      price: 50,
+      status: 'completed',
+      paymentMethod: 'Google Pay',
+      groupSize: 4,
+      createdAt: '2025-08-19T10:15:00Z'
+    },
+    {
+      id: 3,
+      court: 'Court 2',
+      date: '2025-08-18',
+      time: '14:30',
+      duration: 60,
+      player: 'Alex Johnson',
+      price: 35,
+      status: 'completed',
+      paymentMethod: 'Credit Card',
+      groupSize: 2,
+      createdAt: '2025-08-17T20:45:00Z'
+    },
+    {
+      id: 4,
+      court: 'Court 1',
+      date: '2025-08-16',
+      time: '18:00',
+      duration: 120,
+      player: 'Alex Johnson',
+      price: 65,
+      status: 'cancelled',
+      paymentMethod: 'Apple Pay',
+      groupSize: 1,
+      createdAt: '2025-08-15T12:00:00Z'
+    },
+    {
+      id: 5,
+      court: 'Court 4',
+      date: '2025-08-22',
+      time: '19:30',
+      duration: 90,
+      player: 'Alex Johnson',
+      price: 50,
+      status: 'upcoming',
+      paymentMethod: 'Apple Pay',
+      groupSize: 3,
+      createdAt: '2025-08-20T09:20:00Z'
+    }
+  ];
+  
+  localStorage.setItem('bookingHistory', JSON.stringify(sampleHistory));
+}
+
+function displayBookingHistory(filter = 'all') {
+  const history = JSON.parse(localStorage.getItem('bookingHistory') || '[]');
+  const timeline = document.getElementById('bookingTimeline');
+  
+  let filteredHistory = history;
+  if (filter !== 'all') {
+    filteredHistory = history.filter(booking => booking.status === filter);
+  }
+  
+  if (filteredHistory.length === 0) {
+    timeline.innerHTML = `
+      <div class="timeline-empty">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+        </svg>
+        <h3>No bookings found</h3>
+        <p>No bookings match the selected filter.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  // Sort by date (newest first)
+  filteredHistory.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  
+  timeline.innerHTML = filteredHistory.map(booking => {
+    const bookingDate = new Date(booking.date + 'T' + booking.time + ':00');
+    const isUpcoming = bookingDate > new Date();
+    const formattedDate = formatDate(booking.date);
+    const formattedTime = formatTime(booking.time);
+    
+    let actions = '';
+    if (booking.status === 'upcoming') {
+      actions = `
+        <div class="timeline-actions">
+          <button class="timeline-action" onclick="rescheduleBooking(${booking.id})">Reschedule</button>
+          <button class="timeline-action danger" onclick="cancelBooking(${booking.id})">Cancel</button>
+        </div>
+      `;
+    } else if (booking.status === 'completed') {
+      actions = `
+        <div class="timeline-actions">
+          <button class="timeline-action" onclick="rebookSlot(${booking.id})">Book Again</button>
+          <button class="timeline-action" onclick="rateBooking(${booking.id})">Rate Experience</button>
+        </div>
+      `;
+    }
+    
+    return `
+      <div class="timeline-item ${booking.status}" data-booking-id="${booking.id}">
+        <div class="timeline-header">
+          <h3 class="timeline-title">${booking.court} - ${formattedDate}</h3>
+          <span class="timeline-status ${booking.status}">${booking.status}</span>
+        </div>
+        
+        <div class="timeline-details">
+          <div class="timeline-detail">
+            <span class="timeline-detail-label">Time</span>
+            <span class="timeline-detail-value">${formattedTime}</span>
+          </div>
+          <div class="timeline-detail">
+            <span class="timeline-detail-label">Duration</span>
+            <span class="timeline-detail-value">${booking.duration} minutes</span>
+          </div>
+          <div class="timeline-detail">
+            <span class="timeline-detail-label">Players</span>
+            <span class="timeline-detail-value">${booking.groupSize} ${booking.groupSize === 1 ? 'player' : 'players'}</span>
+          </div>
+          <div class="timeline-detail">
+            <span class="timeline-detail-label">Price</span>
+            <span class="timeline-detail-value">€${booking.price}</span>
+          </div>
+          <div class="timeline-detail">
+            <span class="timeline-detail-label">Payment</span>
+            <span class="timeline-detail-value">${booking.paymentMethod}</span>
+          </div>
+        </div>
+        
+        ${actions}
+      </div>
+    `;
+  }).join('');
+}
+
+function filterBookingHistory(filter) {
+  displayBookingHistory(filter);
+}
+
+function rescheduleBooking(bookingId) {
+  showToast('Reschedule feature coming soon! You can cancel and create a new booking.', 'info');
+}
+
+function cancelBooking(bookingId) {
+  if (confirm('Are you sure you want to cancel this booking?')) {
+    const history = JSON.parse(localStorage.getItem('bookingHistory') || '[]');
+    const bookingIndex = history.findIndex(b => b.id === bookingId);
+    
+    if (bookingIndex !== -1) {
+      history[bookingIndex].status = 'cancelled';
+      localStorage.setItem('bookingHistory', JSON.stringify(history));
+      
+      showToast('Booking cancelled successfully. Refund will be processed within 24 hours.', 'success');
+      displayBookingHistory();
+      
+      // Trigger real-time sync
+      if (typeof triggerRealTimeEvent === 'function') {
+        triggerRealTimeEvent('cancellation', {
+          court: history[bookingIndex].court,
+          time: history[bookingIndex].time,
+          action: 'cancelled'
+        });
+      }
+    }
+  }
+}
+
+function rebookSlot(bookingId) {
+  const history = JSON.parse(localStorage.getItem('bookingHistory') || '[]');
+  const booking = history.find(b => b.id === bookingId);
+  
+  if (booking) {
+    // Pre-fill form with booking details
+    document.getElementById('courtSelect').value = booking.court.split(' ')[1];
+    document.getElementById('durationSelect').value = booking.duration;
+    
+    // Switch to form view
+    switchView('form');
+    
+    showToast('Form pre-filled with previous booking details!', 'success');
+  }
+}
+
+function rateBooking(bookingId) {
+  showToast('Rating feature coming soon! Thank you for your feedback.', 'info');
 }
 
 function shareViaEmail() {
