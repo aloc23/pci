@@ -23,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeBookingPage();
   initializeCalendarView();
   initializeGroupBooking();
+  initializeBookingHistory();
 });
 
 let currentWeekStart = new Date();
@@ -84,14 +85,508 @@ function initializeGroupBooking() {
 
 function toggleGroupBooking() {
   const checkbox = document.getElementById('groupBooking');
-  const section = document.getElementById('groupBookingSection');
   
   if (checkbox.checked) {
-    section.style.display = 'block';
-    updateGroupPlayers();
-  } else {
-    section.style.display = 'none';
+    openGroupBookingModal();
   }
+}
+
+// Enhanced Group Booking Modal Functions
+function openGroupBookingModal() {
+  const modal = document.getElementById('groupBookingModal');
+  modal.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  
+  // Initialize modal
+  initializeGroupModal();
+}
+
+function closeGroupBookingModal() {
+  const modal = document.getElementById('groupBookingModal');
+  modal.classList.remove('show');
+  document.body.style.overflow = 'auto';
+  
+  // Uncheck the group booking checkbox
+  const checkbox = document.getElementById('groupBooking');
+  if (checkbox) {
+    checkbox.checked = false;
+  }
+}
+
+function initializeGroupModal() {
+  // Set up group size selector
+  const sizeBtns = document.querySelectorAll('.size-btn');
+  sizeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      sizeBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      generatePlayerInputs(parseInt(btn.dataset.size));
+    });
+  });
+  
+  // Set up payment method change
+  const paymentRadios = document.querySelectorAll('input[name="groupPayment"]');
+  paymentRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      updatePaymentDisplay();
+    });
+  });
+  
+  // Initialize with default 4 players
+  generatePlayerInputs(4);
+  updatePaymentDisplay();
+}
+
+function generatePlayerInputs(groupSize) {
+  const container = document.getElementById('playersContainer');
+  container.innerHTML = '';
+  
+  for (let i = 1; i <= groupSize; i++) {
+    const playerDiv = document.createElement('div');
+    playerDiv.className = 'player-input';
+    
+    const isMainPlayer = i === 1;
+    const statusText = isMainPlayer ? '(You)' : 'Invited';
+    
+    playerDiv.innerHTML = `
+      <input 
+        type="text" 
+        placeholder="Player ${i} Name" 
+        id="groupPlayer${i}"
+        ${isMainPlayer ? 'value="' + (document.getElementById('playerName')?.value || '') + '"' : ''}
+        ${isMainPlayer ? 'readonly' : ''}
+      >
+      <input 
+        type="email" 
+        placeholder="Email for payment link" 
+        id="groupPlayerEmail${i}"
+        ${isMainPlayer ? 'style="display: none;"' : ''}
+      >
+      <span class="player-status">${statusText}</span>
+    `;
+    
+    container.appendChild(playerDiv);
+  }
+}
+
+function updatePaymentDisplay() {
+  const splitPayment = document.querySelector('input[name="groupPayment"]:checked').value === 'split';
+  const splitDetails = document.getElementById('splitPaymentDetails');
+  const breakdown = document.getElementById('paymentBreakdown');
+  
+  if (splitPayment) {
+    splitDetails.style.display = 'block';
+    
+    // Calculate split amount
+    const duration = document.getElementById('durationSelect')?.value || 60;
+    const totalPrice = PRICING[duration] || 35;
+    const groupSize = parseInt(document.querySelector('.size-btn.active').dataset.size);
+    const perPersonAmount = (totalPrice / groupSize).toFixed(2);
+    
+    breakdown.innerHTML = `
+      <div class="payment-split-item">
+        <span>Total Booking Cost:</span>
+        <span>€${totalPrice}</span>
+      </div>
+      <div class="payment-split-item">
+        <span>Per Person (${groupSize} players):</span>
+        <span class="highlight">€${perPersonAmount}</span>
+      </div>
+      <div class="payment-note">
+        <small>Payment links will be sent to each player's email</small>
+      </div>
+    `;
+  } else {
+    splitDetails.style.display = 'none';
+  }
+}
+
+function suggestPartners() {
+  const suggestedPartners = [
+    { name: 'Maria Garcia', skill: 'Advanced', lastPlayed: '2 days ago' },
+    { name: 'Carlos Rodriguez', skill: 'Intermediate', lastPlayed: '1 week ago' },
+    { name: 'Sophie Chen', skill: 'Advanced', lastPlayed: '3 days ago' },
+    { name: 'Jake Thompson', skill: 'Beginner', lastPlayed: '5 days ago' }
+  ];
+  
+  const partnersHtml = suggestedPartners.map(partner => `
+    <div class="suggested-partner" onclick="selectSuggestedPartner('${partner.name}', '${partner.skill}')">
+      <div class="partner-info">
+        <strong>${partner.name}</strong>
+        <span class="skill-level">${partner.skill}</span>
+        <span class="last-played">Last played: ${partner.lastPlayed}</span>
+      </div>
+      <button class="invite-partner-btn">Invite</button>
+    </div>
+  `).join('');
+  
+  showToast(`
+    <div class="partners-suggestion">
+      <h4>Suggested Partners</h4>
+      ${partnersHtml}
+    </div>
+  `, 'info', 8000);
+}
+
+function selectSuggestedPartner(name, skill) {
+  // Find first empty player input
+  const playerInputs = document.querySelectorAll('#playersContainer input[type="text"]');
+  for (let i = 1; i < playerInputs.length; i++) { // Skip first (main player)
+    if (!playerInputs[i].value) {
+      playerInputs[i].value = name;
+      showToast(`${name} added to your group!`, 'success');
+      break;
+    }
+  }
+}
+
+// Booking History Timeline
+function initializeBookingHistory() {
+  generateSampleHistory();
+  displayBookingHistory();
+  
+  // Set up filter buttons
+  const filterButtons = document.querySelectorAll('.timeline-filter');
+  filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      filterButtons.forEach(b => b.classList.remove('active'));
+      button.classList.add('active');
+      filterBookingHistory(button.dataset.filter);
+    });
+  });
+}
+
+function generateSampleHistory() {
+  const sampleHistory = [
+    {
+      id: 1,
+      court: 'Court 1',
+      date: '2025-08-20',
+      time: '10:00',
+      duration: 60,
+      player: 'Alex Johnson',
+      price: 35,
+      status: 'upcoming',
+      paymentMethod: 'Apple Pay',
+      groupSize: 1,
+      createdAt: '2025-08-19T15:30:00Z'
+    },
+    {
+      id: 2,
+      court: 'Court 3',
+      date: '2025-08-19',
+      time: '16:00',
+      duration: 90,
+      player: 'Alex Johnson',
+      price: 50,
+      status: 'completed',
+      paymentMethod: 'Google Pay',
+      groupSize: 4,
+      createdAt: '2025-08-19T10:15:00Z'
+    },
+    {
+      id: 3,
+      court: 'Court 2',
+      date: '2025-08-18',
+      time: '14:30',
+      duration: 60,
+      player: 'Alex Johnson',
+      price: 35,
+      status: 'completed',
+      paymentMethod: 'Credit Card',
+      groupSize: 2,
+      createdAt: '2025-08-17T20:45:00Z'
+    },
+    {
+      id: 4,
+      court: 'Court 1',
+      date: '2025-08-16',
+      time: '18:00',
+      duration: 120,
+      player: 'Alex Johnson',
+      price: 65,
+      status: 'cancelled',
+      paymentMethod: 'Apple Pay',
+      groupSize: 1,
+      createdAt: '2025-08-15T12:00:00Z'
+    },
+    {
+      id: 5,
+      court: 'Court 4',
+      date: '2025-08-22',
+      time: '19:30',
+      duration: 90,
+      player: 'Alex Johnson',
+      price: 50,
+      status: 'upcoming',
+      paymentMethod: 'Apple Pay',
+      groupSize: 3,
+      createdAt: '2025-08-20T09:20:00Z'
+    }
+  ];
+  
+  localStorage.setItem('bookingHistory', JSON.stringify(sampleHistory));
+}
+
+function displayBookingHistory(filter = 'all') {
+  const history = JSON.parse(localStorage.getItem('bookingHistory') || '[]');
+  const timeline = document.getElementById('bookingTimeline');
+  
+  let filteredHistory = history;
+  if (filter !== 'all') {
+    filteredHistory = history.filter(booking => booking.status === filter);
+  }
+  
+  if (filteredHistory.length === 0) {
+    timeline.innerHTML = `
+      <div class="timeline-empty">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+        </svg>
+        <h3>No bookings found</h3>
+        <p>No bookings match the selected filter.</p>
+      </div>
+    `;
+    return;
+  }
+  
+  // Sort by date (newest first)
+  filteredHistory.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  
+  timeline.innerHTML = filteredHistory.map(booking => {
+    const bookingDate = new Date(booking.date + 'T' + booking.time + ':00');
+    const isUpcoming = bookingDate > new Date();
+    const formattedDate = formatDate(booking.date);
+    const formattedTime = formatTime(booking.time);
+    
+    let actions = '';
+    if (booking.status === 'upcoming') {
+      actions = `
+        <div class="timeline-actions">
+          <button class="timeline-action" onclick="rescheduleBooking(${booking.id})">Reschedule</button>
+          <button class="timeline-action danger" onclick="cancelBooking(${booking.id})">Cancel</button>
+        </div>
+      `;
+    } else if (booking.status === 'completed') {
+      actions = `
+        <div class="timeline-actions">
+          <button class="timeline-action" onclick="rebookSlot(${booking.id})">Book Again</button>
+          <button class="timeline-action" onclick="rateBooking(${booking.id})">Rate Experience</button>
+        </div>
+      `;
+    }
+    
+    return `
+      <div class="timeline-item ${booking.status}" data-booking-id="${booking.id}">
+        <div class="timeline-header">
+          <h3 class="timeline-title">${booking.court} - ${formattedDate}</h3>
+          <span class="timeline-status ${booking.status}">${booking.status}</span>
+        </div>
+        
+        <div class="timeline-details">
+          <div class="timeline-detail">
+            <span class="timeline-detail-label">Time</span>
+            <span class="timeline-detail-value">${formattedTime}</span>
+          </div>
+          <div class="timeline-detail">
+            <span class="timeline-detail-label">Duration</span>
+            <span class="timeline-detail-value">${booking.duration} minutes</span>
+          </div>
+          <div class="timeline-detail">
+            <span class="timeline-detail-label">Players</span>
+            <span class="timeline-detail-value">${booking.groupSize} ${booking.groupSize === 1 ? 'player' : 'players'}</span>
+          </div>
+          <div class="timeline-detail">
+            <span class="timeline-detail-label">Price</span>
+            <span class="timeline-detail-value">€${booking.price}</span>
+          </div>
+          <div class="timeline-detail">
+            <span class="timeline-detail-label">Payment</span>
+            <span class="timeline-detail-value">${booking.paymentMethod}</span>
+          </div>
+        </div>
+        
+        ${actions}
+      </div>
+    `;
+  }).join('');
+}
+
+function filterBookingHistory(filter) {
+  displayBookingHistory(filter);
+}
+
+function rescheduleBooking(bookingId) {
+  showToast('Reschedule feature coming soon! You can cancel and create a new booking.', 'info');
+}
+
+function cancelBooking(bookingId) {
+  if (confirm('Are you sure you want to cancel this booking?')) {
+    const history = JSON.parse(localStorage.getItem('bookingHistory') || '[]');
+    const bookingIndex = history.findIndex(b => b.id === bookingId);
+    
+    if (bookingIndex !== -1) {
+      history[bookingIndex].status = 'cancelled';
+      localStorage.setItem('bookingHistory', JSON.stringify(history));
+      
+      showToast('Booking cancelled successfully. Refund will be processed within 24 hours.', 'success');
+      displayBookingHistory();
+      
+      // Trigger real-time sync
+      if (typeof triggerRealTimeEvent === 'function') {
+        triggerRealTimeEvent('cancellation', {
+          court: history[bookingIndex].court,
+          time: history[bookingIndex].time,
+          action: 'cancelled'
+        });
+      }
+    }
+  }
+}
+
+function rebookSlot(bookingId) {
+  const history = JSON.parse(localStorage.getItem('bookingHistory') || '[]');
+  const booking = history.find(b => b.id === bookingId);
+  
+  if (booking) {
+    // Pre-fill form with booking details
+    document.getElementById('courtSelect').value = booking.court.split(' ')[1];
+    document.getElementById('durationSelect').value = booking.duration;
+    
+    // Switch to form view
+    switchView('form');
+    
+    showToast('Form pre-filled with previous booking details!', 'success');
+  }
+}
+
+function rateBooking(bookingId) {
+  showToast('Rating feature coming soon! Thank you for your feedback.', 'info');
+}
+
+function shareViaEmail() {
+  const groupSize = document.querySelector('.size-btn.active').dataset.size;
+  const court = document.getElementById('courtSelect')?.value || 'TBD';
+  const date = document.getElementById('bookingDate')?.value || 'TBD';
+  const time = document.getElementById('timeSelect')?.value || 'TBD';
+  
+  const subject = `Padel Club Group Booking Invitation`;
+  const body = `Hi! You're invited to join our ${groupSize}-player padel game at Padel Club.
+  
+Details:
+- Court: ${court}
+- Date: ${date}
+- Time: ${time}
+- Players: ${groupSize}
+
+Click here to confirm your spot: ${window.location.origin}/booking.html
+
+See you on the court!`;
+
+  const mailtoLink = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.open(mailtoLink);
+  
+  showToast('Email invitation opened!', 'success');
+}
+
+function shareViaWhatsApp() {
+  const groupSize = document.querySelector('.size-btn.active').dataset.size;
+  const court = document.getElementById('courtSelect')?.value || 'TBD';
+  const date = document.getElementById('bookingDate')?.value || 'TBD';
+  const time = document.getElementById('timeSelect')?.value || 'TBD';
+  
+  const message = `🏓 Padel Game Invitation!
+
+You're invited to join our ${groupSize}-player game:
+📍 Court: ${court}
+📅 Date: ${date}
+⏰ Time: ${time}
+
+Confirm your spot: ${window.location.origin}/booking.html
+
+Let's play! 🎾`;
+
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  window.open(whatsappUrl, '_blank');
+  
+  showToast('WhatsApp invitation opened!', 'success');
+}
+
+function copyBookingLink() {
+  const bookingLink = `${window.location.origin}/booking.html?group=true`;
+  
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(bookingLink).then(() => {
+      showToast('Booking link copied to clipboard!', 'success');
+    });
+  } else {
+    // Fallback for older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = bookingLink;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand('copy');
+    document.body.removeChild(textArea);
+    showToast('Booking link copied to clipboard!', 'success');
+  }
+}
+
+function confirmGroupBooking() {
+  const groupSize = parseInt(document.querySelector('.size-btn.active').dataset.size);
+  const paymentMethod = document.querySelector('input[name="groupPayment"]:checked').value;
+  
+  // Collect player details
+  const players = [];
+  for (let i = 1; i <= groupSize; i++) {
+    const nameInput = document.getElementById(`groupPlayer${i}`);
+    const emailInput = document.getElementById(`groupPlayerEmail${i}`);
+    
+    if (nameInput && nameInput.value.trim()) {
+      players.push({
+        name: nameInput.value.trim(),
+        email: emailInput ? emailInput.value.trim() : '',
+        isMainPlayer: i === 1
+      });
+    }
+  }
+  
+  if (players.length < 2) {
+    showToast('Please add at least one other player', 'error');
+    return;
+  }
+  
+  // Close modal
+  closeGroupBookingModal();
+  
+  // Show progress indicator
+  const steps = [
+    'Creating group booking...',
+    'Sending invitations...',
+    paymentMethod === 'split' ? 'Setting up split payments...' : 'Processing payment...',
+    'Confirming reservation...',
+    'Booking complete!'
+  ];
+  
+  const progressIndicator = showProgressIndicator('Group Booking', steps);
+  
+  setTimeout(() => {
+    progressIndicator.close();
+    
+    const playerNames = players.map(p => p.name).join(', ');
+    showToast(`🎉 Group booking confirmed! Invitations sent to: ${playerNames}`, 'success', 8000);
+    
+    // Update the main form to indicate group booking
+    const groupCheckbox = document.getElementById('groupBooking');
+    if (groupCheckbox) {
+      groupCheckbox.checked = true;
+    }
+    
+    // Populate group size in main form if it exists
+    const groupSizeSelect = document.getElementById('groupSize');
+    if (groupSizeSelect) {
+      groupSizeSelect.value = groupSize;
+    }
+  }, 5000);
 }
 
 function updateGroupPlayers() {
@@ -449,30 +944,26 @@ function bookCourt() {
 }
 
 function processPayment(method, amount, booking) {
-  let paymentMessage = '';
+  const steps = [
+    'Validating payment details...',
+    'Connecting to payment gateway...',
+    'Processing payment...',
+    'Confirming booking...',
+    'Sending confirmation...'
+  ];
+
+  const progressIndicator = showProgressIndicator(`Processing ${method === 'apple' ? 'Apple Pay' : method === 'google' ? 'Google Pay' : 'Credit Card'} Payment`, steps);
   
-  switch(method) {
-    case 'apple':
-      paymentMessage = `Processing Apple Pay payment of €${amount}...`;
-      break;
-    case 'google':
-      paymentMessage = `Processing Google Pay payment of €${amount}...`;
-      break;
-    case 'standard':
-      paymentMessage = `Processing credit card payment of €${amount}...`;
-      break;
-  }
-  
-  showStatus(paymentMessage, 'info');
-  
-  // Simulate payment processing
+  // Simulate payment processing with enhanced feedback
   setTimeout(() => {
+    progressIndicator.close();
+    
     // Add booking to list
     bookings.push(booking);
     localStorage.setItem('bookings', JSON.stringify(bookings));
     
-    const successMessage = `Payment successful! Court ${booking.court} booked for ${formatTime(booking.time)} on ${formatDate(booking.date)}. Total: €${booking.price}`;
-    showStatus(successMessage, 'success');
+    const successMessage = `✅ Payment successful! Court ${booking.court} booked for ${formatTime(booking.time)} on ${formatDate(booking.date)}. Total: €${booking.price}`;
+    showToast(successMessage, 'success', 6000);
     
     // Trigger real-time sync (if function exists)
     if (typeof triggerRealTimeEvent === 'function') {
@@ -493,7 +984,7 @@ function processPayment(method, amount, booking) {
     if (document.getElementById('calendarGrid')) {
       drawCalendar();
     }
-  }, 2000);
+  }, 5000); // Simulate realistic payment processing time
 }
 
 function resetBookingForm() {
@@ -531,26 +1022,97 @@ function formatDate(dateString) {
   });
 }
 
+// Enhanced status system using new toast notifications
 function showStatus(message, type) {
-  const statusElement = document.getElementById('bookingStatus');
-  statusElement.textContent = message;
-  statusElement.className = `status-message ${type}`;
-  
-  // Add toast animation
-  if (type === 'success') {
-    statusElement.classList.add('toast-success');
-  }
-  
-  // Auto-hide success messages after 5 seconds with fade out
-  if (type === 'success') {
+  showToast(message, type);
+}
+
+// Enhanced toast notification system
+function showToast(message, type = 'info', duration = 5000) {
+  // Remove existing toasts
+  const existingToasts = document.querySelectorAll('.toast');
+  existingToasts.forEach(toast => toast.remove());
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+
+  document.body.appendChild(toast);
+
+  // Trigger animation
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 100);
+
+  // Auto remove
+  setTimeout(() => {
+    toast.classList.remove('show');
     setTimeout(() => {
-      statusElement.classList.add('toast-fadeout');
+      if (toast.parentNode) {
+        document.body.removeChild(toast);
+      }
+    }, 400);
+  }, duration);
+}
+
+// Enhanced progress indicator
+function showProgressIndicator(title, steps = []) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1999;
+    backdrop-filter: blur(5px);
+  `;
+
+  const indicator = document.createElement('div');
+  indicator.className = 'progress-indicator';
+  indicator.innerHTML = `
+    <div class="spinner"></div>
+    <h3>${title}</h3>
+    <div class="progress-bar">
+      <div class="progress-bar-fill"></div>
+    </div>
+    <p class="progress-step">Initializing...</p>
+  `;
+
+  overlay.appendChild(indicator);
+  document.body.appendChild(overlay);
+
+  let currentStep = 0;
+  const progressFill = indicator.querySelector('.progress-bar-fill');
+  const progressStep = indicator.querySelector('.progress-step');
+
+  function updateProgress() {
+    if (currentStep < steps.length) {
+      const progress = ((currentStep + 1) / steps.length) * 100;
+      progressFill.style.width = `${progress}%`;
+      progressStep.textContent = steps[currentStep];
+      currentStep++;
+      
+      setTimeout(updateProgress, 1000);
+    } else {
       setTimeout(() => {
-        statusElement.style.display = 'none';
-        statusElement.classList.remove('toast-success', 'toast-fadeout');
-      }, 300);
-    }, 5000);
+        document.body.removeChild(overlay);
+      }, 500);
+    }
   }
+
+  if (steps.length > 0) {
+    setTimeout(updateProgress, 500);
+  }
+
+  return {
+    close: () => {
+      if (overlay.parentNode) {
+        document.body.removeChild(overlay);
+      }
+    }
+  };
 }
 
 function displayBookings() {
