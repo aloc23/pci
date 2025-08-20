@@ -449,30 +449,26 @@ function bookCourt() {
 }
 
 function processPayment(method, amount, booking) {
-  let paymentMessage = '';
+  const steps = [
+    'Validating payment details...',
+    'Connecting to payment gateway...',
+    'Processing payment...',
+    'Confirming booking...',
+    'Sending confirmation...'
+  ];
+
+  const progressIndicator = showProgressIndicator(`Processing ${method === 'apple' ? 'Apple Pay' : method === 'google' ? 'Google Pay' : 'Credit Card'} Payment`, steps);
   
-  switch(method) {
-    case 'apple':
-      paymentMessage = `Processing Apple Pay payment of €${amount}...`;
-      break;
-    case 'google':
-      paymentMessage = `Processing Google Pay payment of €${amount}...`;
-      break;
-    case 'standard':
-      paymentMessage = `Processing credit card payment of €${amount}...`;
-      break;
-  }
-  
-  showStatus(paymentMessage, 'info');
-  
-  // Simulate payment processing
+  // Simulate payment processing with enhanced feedback
   setTimeout(() => {
+    progressIndicator.close();
+    
     // Add booking to list
     bookings.push(booking);
     localStorage.setItem('bookings', JSON.stringify(bookings));
     
-    const successMessage = `Payment successful! Court ${booking.court} booked for ${formatTime(booking.time)} on ${formatDate(booking.date)}. Total: €${booking.price}`;
-    showStatus(successMessage, 'success');
+    const successMessage = `✅ Payment successful! Court ${booking.court} booked for ${formatTime(booking.time)} on ${formatDate(booking.date)}. Total: €${booking.price}`;
+    showToast(successMessage, 'success', 6000);
     
     // Trigger real-time sync (if function exists)
     if (typeof triggerRealTimeEvent === 'function') {
@@ -493,7 +489,7 @@ function processPayment(method, amount, booking) {
     if (document.getElementById('calendarGrid')) {
       drawCalendar();
     }
-  }, 2000);
+  }, 5000); // Simulate realistic payment processing time
 }
 
 function resetBookingForm() {
@@ -531,26 +527,97 @@ function formatDate(dateString) {
   });
 }
 
+// Enhanced status system using new toast notifications
 function showStatus(message, type) {
-  const statusElement = document.getElementById('bookingStatus');
-  statusElement.textContent = message;
-  statusElement.className = `status-message ${type}`;
-  
-  // Add toast animation
-  if (type === 'success') {
-    statusElement.classList.add('toast-success');
-  }
-  
-  // Auto-hide success messages after 5 seconds with fade out
-  if (type === 'success') {
+  showToast(message, type);
+}
+
+// Enhanced toast notification system
+function showToast(message, type = 'info', duration = 5000) {
+  // Remove existing toasts
+  const existingToasts = document.querySelectorAll('.toast');
+  existingToasts.forEach(toast => toast.remove());
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+
+  document.body.appendChild(toast);
+
+  // Trigger animation
+  setTimeout(() => {
+    toast.classList.add('show');
+  }, 100);
+
+  // Auto remove
+  setTimeout(() => {
+    toast.classList.remove('show');
     setTimeout(() => {
-      statusElement.classList.add('toast-fadeout');
+      if (toast.parentNode) {
+        document.body.removeChild(toast);
+      }
+    }, 400);
+  }, duration);
+}
+
+// Enhanced progress indicator
+function showProgressIndicator(title, steps = []) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1999;
+    backdrop-filter: blur(5px);
+  `;
+
+  const indicator = document.createElement('div');
+  indicator.className = 'progress-indicator';
+  indicator.innerHTML = `
+    <div class="spinner"></div>
+    <h3>${title}</h3>
+    <div class="progress-bar">
+      <div class="progress-bar-fill"></div>
+    </div>
+    <p class="progress-step">Initializing...</p>
+  `;
+
+  overlay.appendChild(indicator);
+  document.body.appendChild(overlay);
+
+  let currentStep = 0;
+  const progressFill = indicator.querySelector('.progress-bar-fill');
+  const progressStep = indicator.querySelector('.progress-step');
+
+  function updateProgress() {
+    if (currentStep < steps.length) {
+      const progress = ((currentStep + 1) / steps.length) * 100;
+      progressFill.style.width = `${progress}%`;
+      progressStep.textContent = steps[currentStep];
+      currentStep++;
+      
+      setTimeout(updateProgress, 1000);
+    } else {
       setTimeout(() => {
-        statusElement.style.display = 'none';
-        statusElement.classList.remove('toast-success', 'toast-fadeout');
-      }, 300);
-    }, 5000);
+        document.body.removeChild(overlay);
+      }, 500);
+    }
   }
+
+  if (steps.length > 0) {
+    setTimeout(updateProgress, 500);
+  }
+
+  return {
+    close: () => {
+      if (overlay.parentNode) {
+        document.body.removeChild(overlay);
+      }
+    }
+  };
 }
 
 function displayBookings() {
