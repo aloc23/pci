@@ -138,18 +138,21 @@ function updateAccessLogDisplay() {
     return;
   }
   
-  container.innerHTML = accessLog.map(entry => `
-    <div class="log-entry">
-      <div>
-        <strong>${entry.method}</strong><br>
-        <small>${entry.code}</small>
+  container.innerHTML = accessLog.map(entry => {
+    const timestamp = new Date(entry.timestamp);
+    return `
+      <div class="log-entry">
+        <div>
+          <strong>${entry.method}</strong><br>
+          <small>${entry.code}</small>
+        </div>
+        <div style="text-align: right; font-size: 0.75rem; color: #6b7280;">
+          ${timestamp.toLocaleTimeString()}<br>
+          ${timestamp.toLocaleDateString()}
+        </div>
       </div>
-      <div style="text-align: right; font-size: 0.75rem; color: #6b7280;">
-        ${entry.timestamp.toLocaleTimeString()}<br>
-        ${entry.timestamp.toLocaleDateString()}
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 }
 
 // In-app shop simulation
