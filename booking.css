@@ -1,53 +1,26 @@
-/* Booking-specific styles */
+/* Booking-specific styles using unified design system */
 
-/* Neon keyframe animations */
-@keyframes neonGlow {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(0, 255, 136, 0.3), 0 0 10px rgba(0, 255, 136, 0.2), 0 0 15px rgba(0, 255, 136, 0.1);
-  }
-  50% {
-    box-shadow: 0 0 10px rgba(0, 255, 136, 0.5), 0 0 20px rgba(0, 255, 136, 0.3), 0 0 30px rgba(0, 255, 136, 0.2);
-  }
+/* Remove duplicate animations - now using the ones from style.css */
+
+/* Enhanced Button Effects for Booking Interface */
+.nav-button, 
+.book-button, 
+.button {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--primary-green), var(--accent-green));
+  color: var(--matt-black);
+  border: none;
+  padding: var(--space-md) var(--space-xl);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
 }
-
-@keyframes neonPulse {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 0 5px rgba(0, 255, 136, 0.3);
-  }
-  50% {
-    transform: scale(1.02);
-    box-shadow: 0 0 15px rgba(0, 255, 136, 0.5), 0 0 25px rgba(0, 255, 136, 0.3);
-  }
-}
-
-@keyframes neonRipple {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(2);
-    opacity: 0;
-  }
-}
-
-@keyframes slideInLeft {
-  0% {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideInRight {
-  0% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
   100% {
     transform: translateX(0);
     opacity: 1;
