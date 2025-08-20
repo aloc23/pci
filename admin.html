@@ -120,6 +120,193 @@
       border-radius: 8px;
       color: #721c24;
     }
+
+    /* Staff Management Styles */
+    .staff-section {
+      margin-top: 1rem;
+    }
+
+    .staff-controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .staff-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .staff-card {
+      background: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .staff-info h4 {
+      margin: 0 0 0.25rem 0;
+      color: #495057;
+    }
+
+    .staff-info p {
+      margin: 0 0 0.5rem 0;
+      color: #6c757d;
+      font-size: 0.9rem;
+    }
+
+    .status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .status.online {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status.offline {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .shift-time {
+      font-size: 0.9rem;
+      color: #6c757d;
+      font-weight: 500;
+    }
+
+    /* Reports Section Styles */
+    .reports-section {
+      margin-top: 1rem;
+    }
+
+    .report-controls {
+      margin-bottom: 1.5rem;
+    }
+
+    .report-filters {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .report-filters select {
+      padding: 0.5rem;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      background: white;
+    }
+
+    .reports-overview {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .report-summary {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #dee2e6;
+    }
+
+    .report-summary h4 {
+      margin: 0 0 1rem 0;
+      color: #495057;
+    }
+
+    .summary-stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+    }
+
+    .summary-item {
+      text-align: center;
+    }
+
+    .summary-item .metric {
+      display: block;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #dc3545;
+    }
+
+    .summary-item .label {
+      font-size: 0.8rem;
+      color: #6c757d;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .trend-indicators {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .trend-item {
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .trend-item.positive {
+      background: #d4edda;
+      border: 1px solid #c3e6cb;
+    }
+
+    .trend-item.negative {
+      background: #f8d7da;
+      border: 1px solid #f5c6cb;
+    }
+
+    .trend-value {
+      display: block;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .trend-item.positive .trend-value {
+      color: #155724;
+    }
+
+    .trend-item.negative .trend-value {
+      color: #721c24;
+    }
+
+    .trend-label {
+      font-size: 0.8rem;
+      color: #6c757d;
+    }
+
+    @media (max-width: 768px) {
+      .reports-overview {
+        grid-template-columns: 1fr;
+      }
+      
+      .summary-stats {
+        grid-template-columns: 1fr;
+      }
+      
+      .staff-controls {
+        flex-direction: column;
+      }
+      
+      .report-filters {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
   </style>
 </head>
 <body>
@@ -130,13 +317,48 @@
         <h1>Padel Club Admin Dashboard</h1>
       </div>
       <nav>
-        <a href="index.html" class="nav-link">Dashboard</a>
-        <a href="booking.html" class="nav-link">Book Court</a>
-        <a href="index.html#xp" class="nav-link">XP & Rewards</a>
-        <a href="index.html#checkin" class="nav-link">Check-in</a>
-        <a href="index.html#shop" class="nav-link">Shop</a>
-        <a href="index.html#locker" class="nav-link">Locker</a>
-        <a href="admin.html" class="nav-link active">Admin</a>
+        <a href="index.html" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+          </svg>
+          Dashboard
+        </a>
+        <a href="booking.html" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+          </svg>
+          Book Court
+        </a>
+        <a href="index.html#xp" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+          XP & Rewards
+        </a>
+        <a href="index.html#checkin" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+          Check-in
+        </a>
+        <a href="index.html#shop" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+          </svg>
+          Shop
+        </a>
+        <a href="index.html#locker" class="nav-link">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+          </svg>
+          Locker
+        </a>
+        <a href="admin.html" class="nav-link active">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          Admin
+        </a>
       </nav>
     </div>
   </header>
@@ -204,10 +426,159 @@
         <div class="admin-card">
           <h3>Quick Actions</h3>
           <div style="display: flex; flex-direction: column; gap: 1rem;">
-            <button onclick="exportBookings()" class="button">Export Bookings</button>
-            <button onclick="sendNotifications()" class="button">Send Member Notifications</button>
-            <button onclick="generateReport()" class="button">Generate Daily Report</button>
-            <button onclick="manageMembers()" class="button">Manage Members</button>
+            <button onclick="exportBookings()" class="button">
+              <svg class="action-icon" viewBox="0 0 24 24">
+                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+              </svg>
+              Export Bookings
+            </button>
+            <button onclick="sendNotifications()" class="button">
+              <svg class="action-icon" viewBox="0 0 24 24">
+                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+              </svg>
+              Send Member Notifications
+            </button>
+            <button onclick="generateReport()" class="button">
+              <svg class="action-icon" viewBox="0 0 24 24">
+                <path d="M19,3H5C3.9,3 3,3.9 3,5V19C3,20.1 3.9,21 5,21H19C20.1,21 21,20.1 21,19V5C21,3.9 20.1,3 19,3M19,19H5V5H19V19Z"/>
+              </svg>
+              Generate Daily Report
+            </button>
+            <button onclick="manageMembers()" class="button">
+              <svg class="action-icon" viewBox="0 0 24 24">
+                <path d="M16,4C18.2,4 20,5.8 20,8C20,10.2 18.2,12 16,12C13.8,12 12,10.2 12,8C12,5.8 13.8,4 16,4Z"/>
+              </svg>
+              Manage Members
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Staff Management Section -->
+      <div class="admin-card">
+        <h3>Staff Management</h3>
+        <div class="staff-section">
+          <div class="staff-controls">
+            <button onclick="addStaff()" class="button">
+              <svg class="action-icon" viewBox="0 0 24 24">
+                <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+              </svg>
+              Add Staff
+            </button>
+            <button onclick="viewSchedule()" class="button">
+              <svg class="action-icon" viewBox="0 0 24 24">
+                <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/>
+              </svg>
+              View Schedule
+            </button>
+            <button onclick="trackAttendance()" class="button">
+              <svg class="action-icon" viewBox="0 0 24 24">
+                <path d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"/>
+              </svg>
+              Track Attendance
+            </button>
+          </div>
+          
+          <div class="staff-grid" id="staffGrid">
+            <div class="staff-card">
+              <div class="staff-info">
+                <h4>Sarah Johnson</h4>
+                <p>Maintenance Staff</p>
+                <span class="status online">Online</span>
+              </div>
+              <div class="staff-actions">
+                <span class="shift-time">09:00 - 17:00</span>
+              </div>
+            </div>
+            
+            <div class="staff-card">
+              <div class="staff-info">
+                <h4>Mike Rodriguez</h4>
+                <p>Court Attendant</p>
+                <span class="status online">Online</span>
+              </div>
+              <div class="staff-actions">
+                <span class="shift-time">14:00 - 22:00</span>
+              </div>
+            </div>
+            
+            <div class="staff-card">
+              <div class="staff-info">
+                <h4>Lisa Chen</h4>
+                <p>Reception</p>
+                <span class="status offline">Off Duty</span>
+              </div>
+              <div class="staff-actions">
+                <span class="shift-time">Off Today</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Automated Reports Section -->
+      <div class="admin-card">
+        <h3>Automated Reports</h3>
+        <div class="reports-section">
+          <div class="report-controls">
+            <div class="report-filters">
+              <select id="reportType">
+                <option value="weekly">Weekly Report</option>
+                <option value="monthly">Monthly Report</option>
+                <option value="quarterly">Quarterly Report</option>
+              </select>
+              <select id="reportCategory">
+                <option value="all">All Categories</option>
+                <option value="bookings">Bookings Only</option>
+                <option value="revenue">Revenue Only</option>
+                <option value="attendance">Attendance Only</option>
+              </select>
+              <button onclick="generateAutomatedReport()" class="button">
+                <svg class="action-icon" viewBox="0 0 24 24">
+                  <path d="M5,3H7V5H5V10A2,2 0 0,1 3,8V6A2,2 0 0,1 5,4V3M19,3V4A2,2 0 0,1 21,6V8A2,2 0 0,1 19,10V5H17V3H19M3,12A2,2 0 0,1 5,14V19H7V21H5A2,2 0 0,1 3,19V17A2,2 0 0,1 1,15V13A2,2 0 0,1 3,11V12M21,12V11A2,2 0 0,1 23,13V15A2,2 0 0,1 21,17V19A2,2 0 0,1 19,21H17V19H19V14A2,2 0 0,1 21,16V12M9,7V10A4,4 0 0,0 13,14H15A2,2 0 0,1 17,16V17H15A4,4 0 0,1 11,13V10A2,2 0 0,0 9,8V7Z"/>
+                </svg>
+                Generate Report
+              </button>
+            </div>
+          </div>
+          
+          <div class="reports-overview">
+            <div class="report-summary">
+              <h4>This Week's Summary</h4>
+              <div class="summary-stats">
+                <div class="summary-item">
+                  <span class="metric">142</span>
+                  <span class="label">Total Bookings</span>
+                </div>
+                <div class="summary-item">
+                  <span class="metric">€4,970</span>
+                  <span class="label">Revenue</span>
+                </div>
+                <div class="summary-item">
+                  <span class="metric">89%</span>
+                  <span class="label">Avg Utilization</span>
+                </div>
+                <div class="summary-item">
+                  <span class="metric">234</span>
+                  <span class="label">Member Visits</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="trend-indicators">
+              <div class="trend-item positive">
+                <span class="trend-value">+12%</span>
+                <span class="trend-label">vs Last Week</span>
+              </div>
+              <div class="trend-item positive">
+                <span class="trend-value">+8%</span>
+                <span class="trend-label">Revenue Growth</span>
+              </div>
+              <div class="trend-item negative">
+                <span class="trend-value">-3%</span>
+                <span class="trend-label">Cancellation Rate</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -324,6 +695,32 @@
 
     function manageMembers() {
       alert('Member management opened (demo feature)');
+    }
+
+    // Staff Management Functions
+    function addStaff() {
+      alert('Add Staff dialog opened (demo feature)');
+    }
+
+    function viewSchedule() {
+      alert('Staff schedule view opened (demo feature)');
+    }
+
+    function trackAttendance() {
+      alert('Staff attendance tracking opened (demo feature)');
+    }
+
+    // Automated Reports Functions
+    function generateAutomatedReport() {
+      const reportType = document.getElementById('reportType').value;
+      const category = document.getElementById('reportCategory').value;
+      
+      alert(`Generating ${reportType} ${category} report... (demo feature)`);
+      
+      // Simulate report generation
+      setTimeout(() => {
+        alert(`${reportType} ${category} report generated successfully!`);
+      }, 2000);
     }
 
     function drawRevenueChart() {

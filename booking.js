@@ -21,7 +21,12 @@ const PRICING = {
 // Initialize booking page
 document.addEventListener('DOMContentLoaded', function() {
   initializeBookingPage();
+  initializeCalendarView();
+  initializeGroupBooking();
 });
+
+let currentWeekStart = new Date();
+currentWeekStart.setDate(currentWeekStart.getDate() - currentWeekStart.getDay() + 1); // Start from Monday
 
 function initializeBookingPage() {
   // Set minimum date to today
@@ -46,6 +51,250 @@ function initializeBookingPage() {
   
   // Check admin access
   checkAdminAccess();
+}
+
+// View switching functionality
+function switchView(viewType) {
+  const formView = document.getElementById('booking');
+  const calendarView = document.getElementById('calendar-view');
+  const formBtn = document.getElementById('formViewBtn');
+  const calendarBtn = document.getElementById('calendarViewBtn');
+  
+  if (viewType === 'form') {
+    formView.classList.add('active');
+    calendarView.classList.remove('active');
+    formBtn.classList.add('active');
+    calendarBtn.classList.remove('active');
+  } else {
+    formView.classList.remove('active');
+    calendarView.classList.add('active');
+    formBtn.classList.remove('active');
+    calendarBtn.classList.add('active');
+    drawCalendar();
+  }
+}
+
+// Group booking functionality
+function initializeGroupBooking() {
+  const splitPayment = document.getElementById('splitPayment');
+  if (splitPayment) {
+    splitPayment.addEventListener('change', updatePaymentBreakdown);
+  }
+}
+
+function toggleGroupBooking() {
+  const checkbox = document.getElementById('groupBooking');
+  const section = document.getElementById('groupBookingSection');
+  
+  if (checkbox.checked) {
+    section.style.display = 'block';
+    updateGroupPlayers();
+  } else {
+    section.style.display = 'none';
+  }
+}
+
+function updateGroupPlayers() {
+  const groupSize = document.getElementById('groupSize').value;
+  const container = document.getElementById('groupPlayersContainer');
+  
+  container.innerHTML = '';
+  
+  // Add input fields for other players (excluding the main player)
+  for (let i = 2; i <= groupSize; i++) {
+    const playerDiv = document.createElement('div');
+    playerDiv.className = 'group-player-input';
+    playerDiv.innerHTML = `
+      <label for="player${i}">Player ${i} Name:</label>
+      <input type="text" id="player${i}" placeholder="Enter player name" required>
+      <label for="player${i}Email">Player ${i} Email (for payment link):</label>
+      <input type="email" id="player${i}Email" placeholder="Enter email for payment">
+    `;
+    container.appendChild(playerDiv);
+  }
+  
+  updatePaymentBreakdown();
+}
+
+function updatePaymentBreakdown() {
+  const splitPayment = document.getElementById('splitPayment');
+  const breakdown = document.getElementById('paymentBreakdown');
+  const groupSize = document.getElementById('groupSize').value;
+  const duration = document.getElementById('duration').value;
+  
+  if (splitPayment.checked && document.getElementById('groupBooking').checked) {
+    breakdown.style.display = 'block';
+    const totalPrice = PRICING[duration] || 35;
+    const perPerson = Math.round((totalPrice / groupSize) * 100) / 100;
+    
+    breakdown.innerHTML = `
+      <h5>Payment Breakdown</h5>
+      ${Array.from({length: groupSize}, (_, i) => `
+        <div class="payment-breakdown-item">
+          <span>Player ${i + 1}</span>
+          <span>€${perPerson}</span>
+        </div>
+      `).join('')}
+      <div class="payment-breakdown-item total">
+        <span><strong>Total</strong></span>
+        <span><strong>€${totalPrice}</strong></span>
+      </div>
+      <p style="margin-top: 1rem; font-size: 0.9rem; color: #6c757d;">
+        Payment links will be sent to each player's email.
+      </p>
+    `;
+  } else {
+    breakdown.style.display = 'none';
+  }
+}
+
+// Calendar functionality
+function initializeCalendarView() {
+  // Set current week to this week
+  currentWeekStart = new Date();
+  const today = currentWeekStart.getDay();
+  currentWeekStart.setDate(currentWeekStart.getDate() - today + 1); // Start from Monday
+}
+
+function changeWeek(direction) {
+  currentWeekStart.setDate(currentWeekStart.getDate() + (direction * 7));
+  drawCalendar();
+}
+
+function drawCalendar() {
+  const grid = document.getElementById('calendarGrid');
+  const weekSpan = document.getElementById('currentWeek');
+  
+  if (!grid || !weekSpan) return;
+  
+  // Update week display
+  const endDate = new Date(currentWeekStart);
+  endDate.setDate(endDate.getDate() + 6);
+  weekSpan.textContent = `${currentWeekStart.toLocaleDateString()} - ${endDate.toLocaleDateString()}`;
+  
+  // Clear grid
+  grid.innerHTML = '';
+  
+  // Time slots
+  const timeSlots = ['8:00', '10:00', '12:00', '14:00', '16:00', '18:00', '20:00'];
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  
+  // Header row
+  const emptyHeader = document.createElement('div');
+  emptyHeader.className = 'calendar-cell header';
+  grid.appendChild(emptyHeader);
+  
+  days.forEach(day => {
+    const dayHeader = document.createElement('div');
+    dayHeader.className = 'calendar-cell header';
+    dayHeader.textContent = day;
+    grid.appendChild(dayHeader);
+  });
+  
+  // Time slots and availability
+  timeSlots.forEach(time => {
+    // Time header
+    const timeHeader = document.createElement('div');
+    timeHeader.className = 'calendar-cell time-header';
+    timeHeader.textContent = time;
+    grid.appendChild(timeHeader);
+    
+    // Days for this time slot
+    days.forEach((day, dayIndex) => {
+      const cell = document.createElement('div');
+      cell.className = 'calendar-cell available';
+      
+      const cellDate = new Date(currentWeekStart);
+      cellDate.setDate(cellDate.getDate() + dayIndex);
+      
+      // Check if slot is booked
+      const isBooked = bookings.some(booking => {
+        const bookingDate = new Date(booking.date);
+        return bookingDate.toDateString() === cellDate.toDateString() && 
+               booking.time === time;
+      });
+      
+      if (isBooked) {
+        cell.className = 'calendar-cell booked';
+        cell.textContent = 'Booked';
+      } else {
+        cell.textContent = 'Available';
+        cell.onclick = () => selectCalendarSlot(cellDate, time, cell);
+      }
+      
+      // Add drag functionality for existing bookings
+      if (isBooked) {
+        cell.draggable = true;
+        cell.ondragstart = (e) => handleDragStart(e, cellDate, time);
+      }
+      
+      // Add drop functionality for available slots
+      if (!isBooked) {
+        cell.ondragover = (e) => e.preventDefault();
+        cell.ondrop = (e) => handleDrop(e, cellDate, time);
+      }
+      
+      grid.appendChild(cell);
+    });
+  });
+}
+
+function selectCalendarSlot(date, time, cell) {
+  // Remove previous selections
+  document.querySelectorAll('.calendar-cell.selected').forEach(c => {
+    c.classList.remove('selected');
+  });
+  
+  // Select this cell
+  cell.classList.add('selected');
+  
+  // Update form with selected values
+  document.getElementById('bookingDate').value = date.toISOString().split('T')[0];
+  document.getElementById('timeSelect').innerHTML = `<option value="${time}" selected>${formatTime(time)}</option>`;
+  
+  // Switch to form view
+  switchView('form');
+}
+
+function handleDragStart(e, date, time) {
+  e.dataTransfer.setData('text/plain', JSON.stringify({date: date.toISOString().split('T')[0], time}));
+  e.target.classList.add('dragging');
+}
+
+function handleDrop(e, newDate, newTime) {
+  e.preventDefault();
+  const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+  
+  // Find the booking to move
+  const bookingIndex = bookings.findIndex(b => 
+    b.date === data.date && b.time === data.time
+  );
+  
+  if (bookingIndex !== -1) {
+    // Update booking
+    bookings[bookingIndex].date = newDate.toISOString().split('T')[0];
+    bookings[bookingIndex].time = newTime;
+    
+    // Save to localStorage
+    localStorage.setItem('bookings', JSON.stringify(bookings));
+    
+    // Trigger real-time sync
+    triggerRealTimeEvent('booking', {
+      court: bookings[bookingIndex].court,
+      time: newTime,
+      action: 'rescheduled'
+    });
+    
+    // Redraw calendar
+    drawCalendar();
+    
+    alert('Booking rescheduled successfully!');
+  }
+  
+  // Remove dragging class
+  document.querySelectorAll('.dragging').forEach(el => {
+    el.classList.remove('dragging');
+  });
 }
 
 function loadAvailableTimes() {
@@ -126,6 +375,8 @@ function bookCourt() {
   const time = document.getElementById('timeSelect').value;
   const duration = parseInt(document.getElementById('duration').value);
   const playerName = document.getElementById('playerName').value.trim();
+  const isGroupBooking = document.getElementById('groupBooking')?.checked || false;
+  const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked')?.value || 'standard';
   
   const statusElement = document.getElementById('bookingStatus');
   
@@ -159,32 +410,115 @@ function bookCourt() {
     return;
   }
   
+  let groupPlayers = [playerName];
+  let totalPrice = PRICING[duration];
+  
+  // Handle group booking
+  if (isGroupBooking) {
+    const groupSize = parseInt(document.getElementById('groupSize')?.value || 2);
+    for (let i = 2; i <= groupSize; i++) {
+      const playerInput = document.getElementById(`player${i}`);
+      if (playerInput && playerInput.value.trim()) {
+        groupPlayers.push(playerInput.value.trim());
+      }
+    }
+    
+    // Check if split payment is enabled
+    if (document.getElementById('splitPayment')?.checked) {
+      const perPersonAmount = Math.round((totalPrice / groupSize) * 100) / 100;
+      showStatus(`Processing group booking with split payment (€${perPersonAmount} per person)...`, 'info');
+    }
+  }
+  
   // Create booking
   const newBooking = {
     court: court,
     date: date,
     time: time,
     duration: duration,
-    player: playerName,
-    price: PRICING[duration]
+    player: isGroupBooking ? `${playerName} + ${groupPlayers.length - 1} others` : playerName,
+    groupPlayers: isGroupBooking ? groupPlayers : [playerName],
+    price: totalPrice,
+    paymentMethod: paymentMethod,
+    isGroupBooking: isGroupBooking,
+    timestamp: new Date().toISOString()
   };
   
-  bookings.push(newBooking);
+  // Process payment based on method
+  processPayment(paymentMethod, totalPrice, newBooking);
+}
+
+function processPayment(method, amount, booking) {
+  let paymentMessage = '';
   
-  // Save to localStorage for persistence
-  localStorage.setItem('bookings', JSON.stringify(bookings));
+  switch(method) {
+    case 'apple':
+      paymentMessage = `Processing Apple Pay payment of €${amount}...`;
+      break;
+    case 'google':
+      paymentMessage = `Processing Google Pay payment of €${amount}...`;
+      break;
+    case 'standard':
+      paymentMessage = `Processing credit card payment of €${amount}...`;
+      break;
+  }
   
-  const price = PRICING[duration];
-  showStatus(`Court ${court} booked successfully for ${formatTime(time)} on ${formatDate(date)}! Total: €${price}`, 'success');
+  showStatus(paymentMessage, 'info');
   
-  // Reset form
+  // Simulate payment processing
+  setTimeout(() => {
+    // Add booking to list
+    bookings.push(booking);
+    localStorage.setItem('bookings', JSON.stringify(bookings));
+    
+    const successMessage = `Payment successful! Court ${booking.court} booked for ${formatTime(booking.time)} on ${formatDate(booking.date)}. Total: €${booking.price}`;
+    showStatus(successMessage, 'success');
+    
+    // Trigger real-time sync (if function exists)
+    if (typeof triggerRealTimeEvent === 'function') {
+      triggerRealTimeEvent('booking', {
+        court: booking.court,
+        time: booking.time,
+        player: booking.player,
+        action: 'new'
+      });
+    }
+    
+    // Reset form
+    resetBookingForm();
+    
+    // Refresh displays
+    loadAvailableTimes();
+    displayBookings();
+    if (document.getElementById('calendarGrid')) {
+      drawCalendar();
+    }
+  }, 2000);
+}
+
+function resetBookingForm() {
   document.getElementById('courtSelect').value = '';
   document.getElementById('timeSelect').value = '';
   document.getElementById('playerName').value = '';
   
-  // Refresh displays
-  loadAvailableTimes();
-  displayBookings();
+  if (document.getElementById('groupBooking')) {
+    document.getElementById('groupBooking').checked = false;
+  }
+  if (document.getElementById('splitPayment')) {
+    document.getElementById('splitPayment').checked = false;
+  }
+  if (document.getElementById('groupBookingSection')) {
+    document.getElementById('groupBookingSection').style.display = 'none';
+  }
+  if (document.getElementById('paymentBreakdown')) {
+    document.getElementById('paymentBreakdown').style.display = 'none';
+  }
+  
+  // Reset payment method to apple
+  const applePayRadio = document.querySelector('input[name="paymentMethod"][value="apple"]');
+  if (applePayRadio) {
+    applePayRadio.checked = true;
+  }
 }
 
 function formatDate(dateString) {
