@@ -51,11 +51,25 @@
           </svg>
           Locker
         </a>
-        <button onclick="openAdminModal()" class="nav-link admin-login-btn" id="adminLoginBtn">
+        <!-- Login buttons always visible in header -->
+        <a href="login.html" class="nav-link customer-login-btn" id="customerLoginBtn">
           <svg class="nav-icon" viewBox="0 0 24 24">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
           </svg>
-          Admin
+          Customer Login
+        </a>
+        <a href="login.html" class="nav-link admin-login-btn" id="adminLoginBtn">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1M12 7C13.1 7 14 7.9 14 9C14 10.1 13.1 11 12 11C10.9 11 10 10.1 10 9C10 7.9 10.9 7 12 7M18 14.5V16.5H6V14.5C6 13.11 8.69 12.5 12 12.5C15.31 12.5 18 13.11 18 14.5Z"/>
+          </svg>
+          Admin Login
+        </a>
+        <!-- Show logout button if user is logged in -->
+        <button onclick="logout()" class="nav-link" id="logoutBtn" style="display: none;">
+          <svg class="nav-icon" viewBox="0 0 24 24">
+            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.59L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+          </svg>
+          Logout
         </button>
       </nav>
     </div>

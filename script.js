@@ -1,12 +1,14 @@
 // Global state
 let isAdmin = false;
+let isCustomer = false;
+let userRole = null;
 let accessLog = [];
 
 // Dummy data for chart (replace with API later)
 window.onload = function() {
   drawUsageChart();
   drawHeatmap();
-  checkAdminAccess();
+  checkUserAccess();
   handleNavigation();
   initializeShop();
   loadAccessLog();
@@ -15,21 +17,140 @@ window.onload = function() {
   initializeRealTimeSync();
 };
 
-// Check admin access (simulate with localStorage)
-function checkAdminAccess() {
+// Enhanced user access control
+function checkUserAccess() {
+  userRole = localStorage.getItem('userRole');
   isAdmin = localStorage.getItem('isAdmin') === 'true';
-  const adminLink = document.getElementById('adminLink');
-  if (adminLink) {
-    adminLink.style.display = isAdmin ? 'inline' : 'none';
+  isCustomer = localStorage.getItem('isCustomer') === 'true';
+  
+  // Update navigation based on user role
+  updateNavigation();
+  
+  // Check if user should be redirected to login
+  if (!userRole && window.location.pathname !== '/login.html' && !window.location.pathname.endsWith('login.html')) {
+    // Allow access to public pages, redirect to login for protected features
+    showLoginPrompt();
   }
+}
+
+function updateNavigation() {
+  const customerLoginBtn = document.getElementById('customerLoginBtn');
+  const adminLoginBtn = document.getElementById('adminLoginBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const adminLink = document.getElementById('adminLink');
+  
+  if (userRole) {
+    // User is logged in
+    if (customerLoginBtn) customerLoginBtn.style.display = 'none';
+    if (adminLoginBtn) adminLoginBtn.style.display = 'none';
+    if (logoutBtn) logoutBtn.style.display = 'inline-flex';
+    
+    // Show admin link only for admin users
+    if (adminLink) {
+      adminLink.style.display = isAdmin ? 'inline-flex' : 'none';
+    }
+  } else {
+    // User is not logged in
+    if (customerLoginBtn) customerLoginBtn.style.display = 'inline-flex';
+    if (adminLoginBtn) adminLoginBtn.style.display = 'inline-flex';
+    if (logoutBtn) logoutBtn.style.display = 'none';
+    if (adminLink) adminLink.style.display = 'none';
+  }
+}
+
+function showLoginPrompt() {
+  // Show a subtle prompt for login without being intrusive
+  const prompt = document.createElement('div');
+  prompt.innerHTML = `
+    <div style="position: fixed; top: 0; left: 0; right: 0; background: linear-gradient(135deg, var(--primary-green), var(--accent-green)); 
+         color: var(--matt-black); padding: 0.5rem; text-align: center; z-index: 1000; font-weight: 600; font-size: 0.9rem;">
+      Welcome! <a href="login.html" style="color: var(--matt-black); text-decoration: underline;">Login</a> to access all features
+      <button onclick="this.parentElement.parentElement.remove()" style="background: none; border: none; color: var(--matt-black); margin-left: 1rem; cursor: pointer; font-weight: bold;">×</button>
+    </div>
+  `;
+  document.body.insertBefore(prompt, document.body.firstChild);
+  
+  // Auto-hide after 5 seconds
+  setTimeout(() => {
+    if (prompt.parentNode) {
+      prompt.remove();
+    }
+  }, 5000);
+}
+
+function logout() {
+  // Clear all user data
+  localStorage.removeItem('isAdmin');
+  localStorage.removeItem('isCustomer');
+  localStorage.removeItem('userRole');
+  localStorage.removeItem('customerName');
+  
+  // Reset global state
+  isAdmin = false;
+  isCustomer = false;
+  userRole = null;
+  
+  // Show logout notification
+  showToast('Logged out successfully', 'info');
+  
+  // Redirect to login page
+  setTimeout(() => {
+    window.location.href = 'login.html';
+  }, 1000);
+}
+
+function showToast(message, type = 'info') {
+  const toast = document.createElement('div');
+  toast.textContent = message;
+  toast.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    z-index: 10000;
+    animation: slideInRight 0.3s ease-out;
+    max-width: 300px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  `;
+  
+  if (type === 'success') {
+    toast.style.background = 'linear-gradient(135deg, var(--primary-green), var(--accent-green))';
+    toast.style.color = 'var(--matt-black)';
+  } else if (type === 'error') {
+    toast.style.background = 'linear-gradient(135deg, #dc3545, #c82333)';
+  } else {
+    toast.style.background = 'linear-gradient(135deg, var(--granite-grey), var(--granite-grey-dark))';
+  }
+  
+  document.body.appendChild(toast);
+  
+  setTimeout(() => {
+    toast.style.animation = 'slideOutRight 0.3s ease-out';
+    setTimeout(() => {
+      if (toast.parentNode) {
+        document.body.removeChild(toast);
+      }
+    }, 300);
+  }, 3000);
+}
+
+// Legacy function for backwards compatibility
+function checkAdminAccess() {
+  checkUserAccess();
 }
 
 // Toggle admin access (for testing)
 function toggleAdmin() {
   isAdmin = !isAdmin;
   localStorage.setItem('isAdmin', isAdmin.toString());
-  checkAdminAccess();
-  alert(isAdmin ? 'Admin access granted' : 'Admin access revoked');
+  if (isAdmin) {
+    localStorage.setItem('userRole', 'admin');
+  }
+  checkUserAccess();
+  showToast(isAdmin ? 'Admin access granted' : 'Admin access revoked', 'info');
 }
 
 // Handle navigation highlighting
